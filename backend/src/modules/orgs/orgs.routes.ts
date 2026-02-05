@@ -1,0 +1,70 @@
+import { Router } from 'express';
+import * as orgsController from './orgs.controller.js';
+import { validateBody, validateParams } from '../../middlewares/validate.js';
+import { authMiddleware, requireActiveUser, optionalAuthMiddleware } from '../../middlewares/auth.js';
+import { requireCompanyMember, requireCompanyAdmin } from '../../middlewares/rbac.js';
+import { z } from 'zod';
+import {
+    updateOrgSchema,
+    addMemberSchema,
+} from './orgs.validators.js';
+
+const router = Router();
+
+const orgIdParamSchema = z.object({ orgId: z.string().uuid() });
+const memberIdParamSchema = z.object({ memberId: z.string().uuid() });
+
+// Public routes
+router.get('/', optionalAuthMiddleware, orgsController.listOrgs);
+
+router.get(
+    '/:orgId',
+    validateParams(orgIdParamSchema),
+    orgsController.getOrgById
+);
+
+// Protected routes - /me routes must come AFTER specific /:orgId to avoid conflict
+router.get(
+    '/me',
+    authMiddleware,
+    requireActiveUser,
+    requireCompanyMember,
+    orgsController.getMyOrg
+);
+
+router.put(
+    '/me',
+    authMiddleware,
+    requireActiveUser,
+    requireCompanyMember,
+    validateBody(updateOrgSchema),
+    orgsController.updateMyOrg
+);
+
+router.get(
+    '/me/members',
+    authMiddleware,
+    requireActiveUser,
+    requireCompanyMember,
+    orgsController.getMembers
+);
+
+router.post(
+    '/me/members',
+    authMiddleware,
+    requireActiveUser,
+    requireCompanyAdmin,
+    validateBody(addMemberSchema),
+    orgsController.addMember
+);
+
+router.delete(
+    '/me/members/:memberId',
+    authMiddleware,
+    requireActiveUser,
+    requireCompanyAdmin,
+    validateParams(memberIdParamSchema),
+    orgsController.removeMember
+);
+
+export default router;
