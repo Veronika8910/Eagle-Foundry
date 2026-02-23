@@ -1,8 +1,10 @@
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionShell } from '@/features/landing/components/section-shell';
 
 export function FinalCtaSection(): JSX.Element {
+  const navigate = useNavigate();
   return (
     <SectionShell className="pb-12">
       <div className="mx-auto max-w-3xl text-center">
@@ -13,11 +15,13 @@ export function FinalCtaSection(): JSX.Element {
           Join the network where student ambition meets company momentum and investment-ready execution.
         </p>
         <div className="mt-7 flex items-center justify-center gap-3">
-          <Button withBorderEffect={false} className="gap-2 px-6">
+          <Button withBorderEffect={false} className="gap-2 px-6" onClick={() => navigate('/sign-up')}>
             Join Eagle-Foundry
             <ArrowUpRight size={14} />
           </Button>
-          <Button variant="ghost">Contact sales</Button>
+          <Button variant="ghost" asChild>
+            <a href="mailto:contact@eagle-foundry.example">Contact Sales</a>
+          </Button>
         </div>
       </div>
 
@@ -38,11 +42,10 @@ export function FinalCtaSection(): JSX.Element {
         </div>
 
         <div className="flex flex-wrap items-center gap-5">
-          <a href="#">Status</a>
-          <a href="#">Docs</a>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Contact</a>
+          <Link to="/docs" className="transition-colors hover:text-white">Docs</Link>
+          <Link to="/privacy" className="transition-colors hover:text-white">Privacy</Link>
+          <Link to="/terms" className="transition-colors hover:text-white">Terms</Link>
+          <Link to="/contact" className="transition-colors hover:text-white">Contact</Link>
         </div>
       </footer>
     </SectionShell>

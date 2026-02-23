@@ -1,0 +1,209 @@
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api/client';
+import { endpoints } from '@/lib/api/endpoints';
+import type { User, UserRole, UserStatus } from '@/lib/api/types';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { DataTable, type Column } from '@/components/ui/data-table';
+import { FilterBar } from '@/components/ui/filter-bar';
+import { Modal } from '@/components/ui/modal';
+import { Select } from '@/components/ui/select';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { TableSkeleton } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/toast';
+
+export default function UserManagementPage(): JSX.Element {
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [manageModalOpen, setManageModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [newStatus, setNewStatus] = useState<'ACTIVE' | 'SUSPENDED'>('ACTIVE');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const { data: usersData = [], isLoading } = useQuery({
+    queryKey: ['admin', 'users', statusFilter],
+    queryFn: async () => {
+      const res = await api.get<{ data?: User[] }>(endpoints.admin.users, {
+        params: { limit: 100, ...(statusFilter ? { status: statusFilter } : {}) },
+      });
+      const body = res.data;
+      const items = body?.data ?? (Array.isArray(body) ? body : []);
+      return Array.isArray(items) ? items : [];
+    },
+  });
+
+  const filtered = useMemo(() => {
+    let list = usersData;
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter((u) => u.email?.toLowerCase().includes(q));
+    }
+    if (roleFilter) {
+      list = list.filter((u) => u.role === roleFilter);
+    }
+    return list;
+  }, [usersData, search, roleFilter]);
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedUser) throw new Error('No user selected');
+      await api.patch(endpoints.admin.updateUserStatus(selectedUser.id), { status: newStatus });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      toast.success('User status updated');
+      setManageModalOpen(false);
+      setSelectedUser(null);
+      setConfirmOpen(false);
+    },
+    onError: (err: { message?: string }) => {
+      toast.error(err?.message ?? 'Failed to update status');
+    },
+  });
+
+  const openManage = (user: User) => {
+    setSelectedUser(user);
+    setNewStatus(user.status === 'SUSPENDED' ? 'ACTIVE' : user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE');
+    setManageModalOpen(true);
+  };
+
+  const handleSaveStatus = () => {
+    setConfirmOpen(true);
+  };
+
+  const confirmSave = () => {
+    setConfirmOpen(false);
+    updateStatusMutation.mutate();
+  };
+
+  const columns: Column<User & Record<string, unknown>>[] = [
+    {
+      key: 'email',
+      header: 'Email',
+      render: (row) => <span className="font-medium text-zinc-200">{row.email}</span>,
+    },
+    {
+      key: 'role',
+      header: 'Role',
+      render: (row) => <Badge>{row.role as UserRole}</Badge>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (row) => <Badge>{row.status as UserStatus}</Badge>,
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      render: (row) => (
+        <Button
+          variant="ghost"
+          className="h-8 px-3 text-xs"
+          onClick={(e) => {
+            e.stopPropagation();
+            openManage(row);
+          }}
+        >
+          Manage
+        </Button>
+      ),
+    },
+  ];
+
+  const tableData = filtered.map((u) => ({ ...u } as User & Record<string, unknown>));
+
+  return (
+    <div className="space-y-8">
+      <header>
+        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Admin</p>
+        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
+          User Management
+        </h1>
+        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+          Search and manage user accounts, roles, and status.
+        </p>
+      </header>
+
+      <FilterBar
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search by email..."
+        filters={[
+          {
+            key: 'role',
+            label: 'Role',
+            value: roleFilter,
+            onChange: setRoleFilter,
+            options: [
+              { value: 'STUDENT', label: 'Student' },
+              { value: 'COMPANY_ADMIN', label: 'Company Admin' },
+              { value: 'COMPANY_MEMBER', label: 'Company Member' },
+              { value: 'UNIVERSITY_ADMIN', label: 'University Admin' },
+            ],
+          },
+          {
+            key: 'status',
+            label: 'Status',
+            value: statusFilter,
+            onChange: setStatusFilter,
+            options: [
+              { value: 'ACTIVE', label: 'Active' },
+              { value: 'SUSPENDED', label: 'Suspended' },
+              { value: 'PENDING_OTP', label: 'Pending OTP' },
+            ],
+          },
+        ]}
+      />
+
+      {isLoading ? (
+        <TableSkeleton rows={8} cols={4} />
+      ) : (
+        <DataTable columns={columns} data={tableData} emptyMessage="No users found" />
+      )}
+
+      <Modal
+        open={manageModalOpen}
+        onClose={() => {
+          setManageModalOpen(false);
+          setSelectedUser(null);
+        }}
+        title={selectedUser ? `Manage ${selectedUser.email}` : 'Manage User'}
+      >
+        {selectedUser && (
+          <div className="space-y-4">
+            <Select
+              label="Status"
+              options={[
+                { value: 'ACTIVE', label: 'Active' },
+                { value: 'SUSPENDED', label: 'Suspended' },
+              ]}
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.target.value as 'ACTIVE' | 'SUSPENDED')}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setManageModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="primary" withBorderEffect={false} onClick={handleSaveStatus} disabled={updateStatusMutation.isPending}>
+                Save
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={confirmSave}
+        title="Confirm status change"
+        description={`Are you sure you want to change this user's status to ${newStatus}?`}
+        confirmLabel="Confirm"
+        loading={updateStatusMutation.isPending}
+      />
+    </div>
+  );
+}

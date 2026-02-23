@@ -1,3 +1,4 @@
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -41,11 +42,12 @@ function HeroCube(): JSX.Element {
 }
 
 export function HeroSection(): JSX.Element {
+  const navigate = useNavigate();
   return (
     <div className="relative overflow-hidden">
       <SectionShell className="pt-8 md:pt-10">
         <header className="mb-16 flex items-center justify-between gap-4">
-          <a href="/" className="inline-flex items-center gap-3">
+          <Link to="/" className="inline-flex items-center gap-3">
             <picture>
               <source media="(prefers-color-scheme: light)" srcSet="/assets/brand/logo-light-512.png" />
               <img
@@ -55,21 +57,21 @@ export function HeroSection(): JSX.Element {
               />
             </picture>
             <span className="text-sm font-semibold tracking-wide text-zinc-100">Eagle-Foundry</span>
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-7 text-xs text-zinc-300 md:flex">
             {navItems.map((item) => (
-              <a key={item} href="#" className="transition-colors hover:text-white">
+              <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, '-')}`} className="transition-colors hover:text-white">
                 {item}
               </a>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="hidden md:inline-flex">
-              Sign in
+            <Button variant="ghost" className="hidden md:inline-flex" onClick={() => navigate('/login')}>
+              Sign In
             </Button>
-            <Button withBorderEffect={false} className="gap-2">
+            <Button withBorderEffect={false} className="gap-2" onClick={() => navigate('/sign-up')}>
               Get Started
               <ArrowRight size={14} />
             </Button>
@@ -91,12 +93,12 @@ export function HeroSection(): JSX.Element {
               founder-ready talent, and invest early in high-conviction projects.
             </p>
             <div className="flex flex-wrap items-center gap-4">
-              <Button withBorderEffect={false} className="px-6 py-2.5">
+              <Button withBorderEffect={false} className="px-6 py-2.5" onClick={() => navigate('/sign-up')}>
                 Create a Project
               </Button>
-              <a href="#" className="text-sm text-zinc-300 transition-colors hover:text-white">
+              <Link to="/sign-up" className="text-sm text-zinc-300 transition-colors hover:text-white">
                 Explore the platform
-              </a>
+              </Link>
             </div>
           </motion.div>
 

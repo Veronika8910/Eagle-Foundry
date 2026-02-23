@@ -17,8 +17,12 @@ export function requestIdMiddleware(
     res: Response,
     next: NextFunction
 ): void {
-    // Use existing request ID from header or generate new one
-    const requestId = (req.headers['x-request-id'] as string) || uuidv4();
+    const incomingRequestId = req.headers['x-request-id'];
+    const requestId =
+        typeof incomingRequestId === 'string' &&
+        /^[A-Za-z0-9._-]{8,128}$/.test(incomingRequestId)
+            ? incomingRequestId
+            : uuidv4();
 
     req.requestId = requestId;
     res.setHeader('X-Request-Id', requestId);

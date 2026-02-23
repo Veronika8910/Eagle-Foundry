@@ -89,6 +89,7 @@ export async function listActiveOrgs(
             description: true,
             website: true,
             logoUrl: true,
+            status: true,
             isVerifiedBadge: true,
             createdAt: true,
         },

@@ -3,6 +3,7 @@ import * as opportunitiesService from './opportunities.service.js';
 import { success, created, paginated } from '../../utils/response.js';
 import { AppError } from '../../middlewares/errorHandler.js';
 import { ErrorCode } from '../../utils/response.js';
+import { parseLimit } from '../../utils/pagination.js';
 import {
     CreateOpportunityInput,
     UpdateOpportunityInput,
@@ -41,7 +42,7 @@ export async function listOpportunities(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             budgetType: req.query.budgetType as 'paid' | 'unpaid' | 'equity' | undefined,
             tags: req.query.tags ? (Array.isArray(req.query.tags) ? req.query.tags as string[] : [req.query.tags as string]) : undefined,
             search: req.query.search as string | undefined,
@@ -157,7 +158,7 @@ export async function listOrgOpportunities(
         }
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as 'DRAFT' | 'PUBLISHED' | 'CLOSED' | undefined,
         };
         const result = await opportunitiesService.listOrgOpportunities(

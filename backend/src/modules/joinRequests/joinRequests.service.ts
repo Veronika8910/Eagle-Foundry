@@ -36,6 +36,11 @@ export async function createJoinRequest(
         throw new AppError(ErrorCode.CONFLICT, 'Can only join approved startups', 400);
     }
 
+    // Check if the startup is accepting join requests
+    if (!startup.acceptingJoinRequests) {
+        throw new AppError(ErrorCode.CONFLICT, 'This startup is not accepting join requests', 400);
+    }
+
     // Check if already a member
     const isMember = await startupsRepo.isMember(startupId, profile.id);
     if (isMember) {
@@ -52,6 +57,7 @@ export async function createJoinRequest(
         startupId,
         profileId: profile.id,
         message: data.message,
+        formAnswers: data.formAnswers as Record<string, unknown> | undefined,
     });
 
     // Find founder for notification

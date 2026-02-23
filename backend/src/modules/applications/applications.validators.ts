@@ -1,8 +1,19 @@
 import { z } from 'zod';
+import { httpUrlSchema } from '../../middlewares/validate.js';
+
+export const formAnswersSchema = z.object({
+    firstName: z.string().max(100).optional(),
+    lastName: z.string().max(100).optional(),
+    address: z.string().max(500).optional(),
+    resumeUrl: httpUrlSchema.optional(),
+    coverLetter: z.string().max(5000).optional(),
+    customAnswers: z.record(z.string(), z.string().max(2000)).optional(),
+}).optional().nullable();
 
 export const createApplicationSchema = z.object({
     coverLetter: z.string().max(3000).optional().nullable(),
-    resumeUrl: z.string().url().optional().nullable(),
+    resumeUrl: httpUrlSchema.optional().nullable(),
+    formAnswers: formAnswersSchema,
 });
 
 export const updateApplicationStatusSchema = z.object({

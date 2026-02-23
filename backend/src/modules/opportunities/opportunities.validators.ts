@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { customQuestionSchema } from '../startups/startups.validators.js';
 
 export const createOpportunitySchema = z.object({
     title: z.string().min(1, 'Title is required').max(200),
@@ -7,6 +8,7 @@ export const createOpportunitySchema = z.object({
     budgetType: z.enum(['paid', 'unpaid', 'equity']).optional().nullable(),
     budgetRange: z.string().max(100).optional().nullable(),
     tags: z.array(z.string().max(50)).max(10).optional(),
+    customQuestions: z.array(customQuestionSchema).max(20).optional().nullable(),
 });
 
 export const updateOpportunitySchema = z.object({
@@ -16,6 +18,7 @@ export const updateOpportunitySchema = z.object({
     budgetType: z.enum(['paid', 'unpaid', 'equity']).optional().nullable(),
     budgetRange: z.string().max(100).optional().nullable(),
     tags: z.array(z.string().max(50)).max(10).optional(),
+    customQuestions: z.array(customQuestionSchema).max(20).optional().nullable(),
 });
 
 export const listOpportunitiesQuerySchema = z.object({

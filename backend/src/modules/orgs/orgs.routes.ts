@@ -17,13 +17,7 @@ const memberIdParamSchema = z.object({ memberId: z.string().uuid() });
 // Public routes
 router.get('/', optionalAuthMiddleware, orgsController.listOrgs);
 
-router.get(
-    '/:orgId',
-    validateParams(orgIdParamSchema),
-    orgsController.getOrgById
-);
-
-// Protected routes - /me routes must come AFTER specific /:orgId to avoid conflict
+// Protected routes
 router.get(
     '/me',
     authMiddleware,
@@ -65,6 +59,13 @@ router.delete(
     requireCompanyAdmin,
     validateParams(memberIdParamSchema),
     orgsController.removeMember
+);
+
+// Public org profile route (must come after /me routes)
+router.get(
+    '/:orgId',
+    validateParams(orgIdParamSchema),
+    orgsController.getOrgById
 );
 
 export default router;

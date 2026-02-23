@@ -42,11 +42,33 @@ app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet());
+const configuredOrigins = env.CORS_ORIGINS;
+const allowAnyOrigin = configuredOrigins.includes('*');
+
+if (env.NODE_ENV === 'production' && configuredOrigins.length === 1 && configuredOrigins[0] === '*') {
+    throw new Error('Wildcard CORS origin is not allowed in production. Please specify explicit origins.');
+}
+
 app.use(cors({
-    origin: env.NODE_ENV === 'production'
-        ? ['https://eaglefoundry.com', 'https://www.eaglefoundry.com']
-        : '*',
+    origin: (origin, callback) => {
+        if (!origin) {
+            callback(null, true);
+            return;
+        }
+
+        if (allowAnyOrigin && env.NODE_ENV !== 'production') {
+            callback(null, true);
+            return;
+        }
+
+        const allowed = configuredOrigins.includes(origin);
+        if (!allowed) {
+            console.warn(`CORS: rejected origin "${origin}"`);
+        }
+        callback(null, allowed);
+    },
     credentials: true,
+    optionsSuccessStatus: 204,
 }));
 app.use(compression());
 

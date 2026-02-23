@@ -222,6 +222,10 @@ model Startup {
   status      StartupStatus @default(DRAFT)
   adminFeedback String?
   
+  // Join request settings
+  acceptingJoinRequests Boolean @default(false)
+  customQuestions       Json?   // Array of { id, question, required? }
+  
   // Relations
   members      StartupMember[]
   joinRequests JoinRequest[]
@@ -253,6 +257,7 @@ model JoinRequest {
   profileId   String
   profile     StudentProfile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
   message     String?
+  formAnswers Json?            // { firstName, lastName, address, resumeUrl, coverLetter, customAnswers: {} }
   status      JoinRequestStatus @default(PENDING)
   
   // Messaging thread (created when accepted)
@@ -284,6 +289,7 @@ model Opportunity {
   status      OpportunityStatus @default(DRAFT)
   publishedAt DateTime?
   closedAt    DateTime?
+  customQuestions Json?         // Array of { id, question, required? }
   
   // Relations
   applications Application[]
@@ -304,6 +310,7 @@ model Application {
   
   coverLetter   String?
   resumeUrl     String?
+  formAnswers   Json?             // { firstName, lastName, address, customAnswers: {} } — coverLetter and resumeUrl are canonical on this model; strip them from formAnswers before saving
   status        ApplicationStatus @default(SUBMITTED)
   
   // Messaging thread

@@ -1,64 +1,46 @@
 # Lambda Consumer Contracts
 
-This document defines the event payloads consumed by AWS Lambda functions triggered by SQS events from the backend.
+This document defines the SQS envelope and payload contracts produced by the backend.
 
-## Architecture
-- **Backend** publishes events to SNS/SQS.
-- **Lambda Functions** consume these events to perform async tasks (emails, notifications, etc.).
+## SQS Envelope (all events)
 
-## Event Types
+Each message published to `SQS_EVENTS_QUEUE_URL` has this envelope:
 
-### `AUTH.OTP_REQUESTED`
-Triggered when a user requests an OTP for login or verification.
-
-**Payload:**
 ```json
 {
-  "email": "student@ashland.edu",
-  "otp": "123456",
-  "type": "LOGIN" | "VERIFICATION"
+  "eventId": "uuid",
+  "type": "string",
+  "occurredAt": "ISO-8601 timestamp",
+  "payload": {}
 }
 ```
 
-### `STUDENT.WELCOME`
-Triggered when a student successfully verifies their email/signup.
+## OTP Email Events
 
-**Payload:**
+### `email.otp_requested`
+
+Sent when signup verification OTP is generated.
+
+### `email.password_reset_otp_requested`
+
+Sent when password-reset OTP is generated.
+
+Payload for both event types:
+
 ```json
 {
-  "userId": "uuid",
-  "email": "student@ashland.edu",
-  "name": "John Doe"
+  "email": "user@example.com",
+  "otp": "<REDACTED>",
+  "purpose": "signup" | "password_reset",
+  "expiresAt": "2026-02-21T00:10:00.000Z"
 }
 ```
 
-### `OPPORTUNITY.PUBLISHED`
-Triggered when a company publishes a new opportunity.
+> **Note:** Never log or display OTP codes in plaintext.
 
-**Payload:**
-```json
-{
-  "opportunityId": "uuid",
-  "title": "Software Engineer Intern",
-  "orgId": "uuid",
-  "orgName": "TechCorp"
-}
-```
+## Processing Requirements
 
-### `APPLICATION.STATUS_UPDATED`
-Triggered when a student's application status changes.
-
-**Payload:**
-```json
-{
-  "applicationId": "uuid",
-  "studentId": "uuid",
-  "status": "APPROVED" | "REJECTED" | "INTERVIEW",
-  "opportunityTitle": "Software Engineer Intern"
-}
-```
-
-## Lambda Processing Rules
-1. **Idempotency**: Consumers must handle duplicate events gracefully using `eventId`.
-2. **Error Handling**: Failed events should be retried 3 times before moving to DLQ.
-3. **Logging**: All events must be logged with `correlationId`.
+1. Consumers must be idempotent (SQS is at-least-once delivery).
+2. Consumers should use partial batch response for retries (`batchItemFailures`).
+3. A DLQ must be configured for the source queue.
+4. Never log OTP codes in plaintext.

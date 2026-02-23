@@ -4,6 +4,7 @@ import { success, created, noContent, paginated } from '../../utils/response.js'
 import { UpdateOrgInput, AddMemberInput } from './orgs.validators.js';
 import { AppError } from '../../middlewares/errorHandler.js';
 import { ErrorCode } from '../../utils/response.js';
+import { parseLimit } from '../../utils/pagination.js';
 
 /**
  * GET /orgs/me
@@ -111,7 +112,7 @@ export async function listOrgs(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             search: req.query.search as string | undefined,
         };
         const result = await orgsService.listActiveOrgs(query);

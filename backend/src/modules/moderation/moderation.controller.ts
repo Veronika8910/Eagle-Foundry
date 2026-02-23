@@ -5,6 +5,7 @@ import {
     CreateReportInput,
     ResolveReportInput,
 } from '../admin/admin.validators.js';
+import { parseLimit } from '../../utils/pagination.js';
 
 /**
  * POST /reports
@@ -33,7 +34,7 @@ export async function getPendingReports(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
         };
         const result = await moderationService.getPendingReports(query);
         paginated(res, result.items, {
@@ -76,7 +77,7 @@ export async function getMyReports(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
         };
         const result = await moderationService.getMyReports(req.user!.userId, query);
         paginated(res, result.items, {

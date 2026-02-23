@@ -103,7 +103,7 @@ export function buildStartupRejectedEvent(
     feedback: string
 ): { type: string; payload: StartupEventPayload } {
     return {
-        type: EventType.STARTUP_NEEDS_CHANGES, // Reuse same event type
+        type: EventType.STARTUP_REJECTED,
         payload: {
             startupId,
             startupName,

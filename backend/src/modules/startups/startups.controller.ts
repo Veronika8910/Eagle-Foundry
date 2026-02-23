@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import * as startupsService from './startups.service.js';
 import { success, created, paginated } from '../../utils/response.js';
 import { CreateStartupInput, UpdateStartupInput } from './startups.validators.js';
+import { parseLimit } from '../../utils/pagination.js';
+import type { UserRole } from '@prisma/client';
 
 /**
  * POST /startups
@@ -30,7 +32,7 @@ export async function listStartups(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as 'DRAFT' | 'SUBMITTED' | 'NEEDS_CHANGES' | 'APPROVED' | 'ARCHIVED' | undefined,
             tags: req.query.tags ? (Array.isArray(req.query.tags) ? req.query.tags as string[] : [req.query.tags as string]) : undefined,
             stage: req.query.stage as string | undefined,
@@ -57,7 +59,8 @@ export async function getStartup(
     try {
         const startup = await startupsService.getStartupById(
             req.params.id,
-            req.user?.userId
+            req.user?.userId,
+            req.user?.role as UserRole | undefined
         );
         success(res, startup);
     } catch (error) {
@@ -126,7 +129,7 @@ export async function getTeam(
     next: NextFunction
 ): Promise<void> {
     try {
-        const team = await startupsService.getTeamMembers(req.params.id, req.user?.userId);
+        const team = await startupsService.getTeamMembers(req.params.id, req.user?.userId, req.user?.role as UserRole | undefined);
         success(res, team);
     } catch (error) {
         next(error);

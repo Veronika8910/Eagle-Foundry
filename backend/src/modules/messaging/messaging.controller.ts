@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as messagingService from './messaging.service.js';
 import { success, created, paginated } from '../../utils/response.js';
 import { SendMessageInput } from './messaging.validators.js';
+import { parseLimit } from '../../utils/pagination.js';
 
 /**
  * POST /messages/threads/:id/messages
@@ -34,7 +35,7 @@ export async function getMessages(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
         };
         const result = await messagingService.getMessages(
             req.user!.userId,
@@ -61,7 +62,7 @@ export async function getMyThreads(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
         };
         const result = await messagingService.getMyThreads(req.user!.userId, query);
         paginated(res, result.items, {

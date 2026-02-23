@@ -45,11 +45,23 @@ export async function createApplication(
         throw new AppError(ErrorCode.CONFLICT, 'You have already applied to this opportunity', 409);
     }
 
+    let coverLetter = data.coverLetter;
+    let resumeUrl = data.resumeUrl;
+    let sanitizedFormAnswers: Record<string, unknown> | undefined;
+
+    if (data.formAnswers && typeof data.formAnswers === 'object') {
+        const { coverLetter: faCover, resumeUrl: faResume, ...rest } = data.formAnswers;
+        if (!coverLetter && faCover) coverLetter = faCover;
+        if (!resumeUrl && faResume) resumeUrl = faResume;
+        sanitizedFormAnswers = rest;
+    }
+
     const application = await applicationsRepo.createApplication({
         opportunityId,
         profileId: profile.id,
-        coverLetter: data.coverLetter,
-        resumeUrl: data.resumeUrl,
+        coverLetter,
+        resumeUrl,
+        formAnswers: sanitizedFormAnswers,
     });
 
     // Publish event

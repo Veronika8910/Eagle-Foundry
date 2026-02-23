@@ -4,7 +4,15 @@ const envSchema = z.object({
     // Server
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     PORT: z.string().transform(Number).default('3000'),
-    CORS_ORIGINS: z.string().transform((s) => s.split(',')).default('http://localhost:3000'),
+    CORS_ORIGINS: z
+        .string()
+        .transform((s) =>
+            s
+                .split(',')
+                .map((origin) => origin.trim())
+                .filter(Boolean)
+        )
+        .default('http://localhost:5173,http://localhost:3000'),
 
     // Database
     DATABASE_URL: z.string().url(),
@@ -14,10 +22,26 @@ const envSchema = z.object({
     JWT_REFRESH_SECRET: z.string().min(32),
     JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
     JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+    REFRESH_COOKIE_NAME: z.string().default('ef_refresh_token'),
+    REFRESH_COOKIE_DOMAIN: z.string().optional(),
+    REFRESH_COOKIE_SAME_SITE: z.enum(['strict', 'lax', 'none']).default('lax'),
+    REFRESH_COOKIE_SECURE: z
+        .enum(['true', 'false'])
+        .default('true')
+        .transform((v) => v === 'true'),
+    UPLOAD_TOKEN_SECRET: z.string().min(32).optional(),
 
     // Email Domain Rules
     STUDENT_EMAIL_DOMAIN: z.string().default('ashland.edu'),
-    BLOCKED_EMAIL_DOMAINS: z.string().transform((s) => s.split(',')).default('gmail.com,yahoo.com,outlook.com,hotmail.com,icloud.com,proton.me'),
+    BLOCKED_EMAIL_DOMAINS: z
+        .string()
+        .transform((s) =>
+            s
+                .split(',')
+                .map((domain) => domain.trim())
+                .filter(Boolean)
+        )
+        .default('gmail.com,yahoo.com,outlook.com,hotmail.com,icloud.com,proton.me'),
 
     // OTP Configuration
     OTP_TTL_MINUTES: z.string().transform(Number).default('10'),
@@ -36,6 +60,14 @@ const envSchema = z.object({
 
     // Sentry
     SENTRY_DSN: z.string().optional(),
+}).superRefine((data, ctx) => {
+    if (data.REFRESH_COOKIE_SAME_SITE === 'none' && !data.REFRESH_COOKIE_SECURE) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['REFRESH_COOKIE_SECURE'],
+            message: 'REFRESH_COOKIE_SECURE must be true when REFRESH_COOKIE_SAME_SITE is "none"',
+        });
+    }
 });
 
 function loadEnv() {

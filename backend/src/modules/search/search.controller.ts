@@ -7,12 +7,13 @@ import { SearchQuery } from './search.validators.js';
  * GET /search
  */
 export async function search(
-    req: Request<unknown, unknown, unknown, SearchQuery>,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
-        const results = await searchService.search(req.user!.userId, req.query);
+        const query = req.query as unknown as SearchQuery;
+        const results = await searchService.search(req.user!.userId, query);
         success(res, results);
     } catch (error) {
         next(error);

@@ -73,6 +73,18 @@ export const uuidParamSchema = z.object({
 
 export const emailSchema = z.string().email('Invalid email format').toLowerCase().trim();
 
+export const httpUrlSchema = z
+    .string()
+    .url('Invalid URL format')
+    .refine((value) => {
+        try {
+            const protocol = new URL(value).protocol;
+            return protocol === 'http:' || protocol === 'https:';
+        } catch {
+            return false;
+        }
+    }, 'URL must use http or https');
+
 export const passwordSchema = z
     .string()
     .min(8, 'Password must be at least 8 characters')

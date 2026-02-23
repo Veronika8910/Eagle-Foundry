@@ -1,7 +1,9 @@
 import { z } from 'zod';
+import { formAnswersSchema } from '../applications/applications.validators.js';
 
 export const createJoinRequestSchema = z.object({
     message: z.string().max(500).optional().nullable(),
+    formAnswers: formAnswersSchema,
 });
 
 export const updateJoinRequestSchema = z.object({

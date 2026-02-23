@@ -9,12 +9,14 @@ export async function createJoinRequest(data: {
     startupId: string;
     profileId: string;
     message?: string | null;
+    formAnswers?: Record<string, unknown> | null;
 }) {
     return db.joinRequest.create({
         data: {
             startupId: data.startupId,
             profileId: data.profileId,
             message: data.message,
+            formAnswers: data.formAnswers ?? undefined,
             status: 'PENDING',
         },
         include: {

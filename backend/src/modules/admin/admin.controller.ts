@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as adminService from './admin.service.js';
 import { success, paginated } from '../../utils/response.js';
+import { parseLimit } from '../../utils/pagination.js';
 import {
     ReviewStartupInput,
     UpdateUserStatusInput,
@@ -18,7 +19,7 @@ export async function getPendingStartups(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as string | undefined,
         };
         const result = await adminService.getPendingStartups(query);
@@ -62,7 +63,7 @@ export async function listUsers(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as string | undefined,
         };
         const result = await adminService.listUsers(query);
@@ -106,7 +107,7 @@ export async function listOrgs(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as string | undefined,
         };
         const result = await adminService.listOrgs(query);
@@ -166,7 +167,7 @@ export async function getAuditLogs(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as string | undefined,
         };
         const result = await adminService.getAuditLogs(query);

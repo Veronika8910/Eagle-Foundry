@@ -114,7 +114,8 @@ export async function updateStartup(
 export async function listStartups(options: {
     cursor?: string;
     limit: number;
-    status?: StartupStatus | StartupStatus[];
+    includePublicApproved: boolean;
+    ownStatus?: StartupStatus;
     tags?: string[];
     stage?: string;
     search?: string;
@@ -122,13 +123,7 @@ export async function listStartups(options: {
 }) {
     const take = options.limit + 1;
 
-    const statusFilter = Array.isArray(options.status)
-        ? { in: options.status }
-        : options.status;
-
-    // Build where condition
-    const where: Record<string, unknown> = {
-        ...(statusFilter && { status: statusFilter }),
+    const commonWhere: Record<string, unknown> = {
         ...(options.tags?.length && { tags: { hasSome: options.tags } }),
         ...(options.stage && { stage: options.stage }),
         ...(options.search && {
@@ -139,45 +134,33 @@ export async function listStartups(options: {
         }),
     };
 
-    // If profileId is provided, include their own startups regardless of status
+    const whereConditions: Record<string, unknown>[] = [];
+
+    if (options.includePublicApproved) {
+        whereConditions.push({
+            ...commonWhere,
+            status: 'APPROVED',
+        });
+    }
+
     if (options.profileId) {
-        const membershipWhere = {
+        whereConditions.push({
+            ...commonWhere,
             members: {
                 some: { profileId: options.profileId },
             },
-        };
-
-        const combinedWhere = {
-            OR: [where, membershipWhere],
-        };
-
-        const startups = await db.startup.findMany({
-            where: combinedWhere,
-            orderBy: { createdAt: 'desc' },
-            take,
-            ...(options.cursor && {
-                cursor: { id: options.cursor },
-                skip: 1,
-            }),
-            include: {
-                members: {
-                    where: { role: StartupMemberRole.FOUNDER },
-                    include: {
-                        profile: {
-                            select: { firstName: true, lastName: true },
-                        },
-                    },
-                },
-                _count: { select: { members: true } },
-            },
+            ...(options.ownStatus ? { status: options.ownStatus } : {}),
         });
-
-        const hasMore = startups.length > options.limit;
-        const items = hasMore ? startups.slice(0, options.limit) : startups;
-        const nextCursor = hasMore && items.length > 0 ? items[items.length - 1].id : null;
-
-        return { items, nextCursor, hasMore };
     }
+
+    if (whereConditions.length === 0) {
+        return { items: [], nextCursor: null, hasMore: false };
+    }
+
+    const where =
+        whereConditions.length === 1
+            ? whereConditions[0]
+            : { OR: whereConditions };
 
     const startups = await db.startup.findMany({
         where,

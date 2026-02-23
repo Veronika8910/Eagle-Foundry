@@ -3,7 +3,11 @@ import { generatePresignedUploadUrl, generatePresignedDownloadUrl, generateS3Key
 import { AppError, ForbiddenError } from '../../middlewares/errorHandler.js';
 import { ErrorCode } from '../../utils/response.js';
 import { FileContextType, FileContextTypeType } from '../../config/constants.js';
+import { createUploadToken, verifyUploadToken } from '../../utils/uploadToken.js';
 import { PresignUploadInput, ConfirmUploadInput } from './files.validators.js';
+
+const UUID_REGEX =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /**
  * Generate presigned URL for upload
@@ -15,11 +19,20 @@ export async function getUploadUrl(userId: string, data: PresignUploadInput) {
     const key = generateS3Key(data.context, data.contextId, data.filename);
 
     const result = await generatePresignedUploadUrl(key, data.mimeType, data.sizeBytes);
+    const confirmToken = createUploadToken({
+        sub: userId,
+        key,
+        context: data.context,
+        contextId: data.contextId,
+        mimeType: data.mimeType,
+        sizeBytes: data.sizeBytes,
+    });
 
     return {
         uploadUrl: result.uploadUrl,
         key: result.key,
         expiresAt: result.expiresAt,
+        confirmToken,
     };
 }
 
@@ -27,33 +40,46 @@ export async function getUploadUrl(userId: string, data: PresignUploadInput) {
  * Confirm upload and create file record
  */
 export async function confirmUpload(userId: string, data: ConfirmUploadInput) {
+    const tokenPayload = verifyUploadToken(data.confirmToken);
+    if (!tokenPayload) {
+        throw new AppError(
+            ErrorCode.FORBIDDEN,
+            'Invalid or expired upload confirmation token',
+            403
+        );
+    }
+
+    if (tokenPayload.sub !== userId || tokenPayload.key !== data.key) {
+        throw new ForbiddenError('Upload token does not match current user or file');
+    }
+
+    const parsed = parseUploadKey(data.key);
+    if (parsed.context !== tokenPayload.context || parsed.contextId !== tokenPayload.contextId) {
+        throw new ForbiddenError('Upload token context mismatch');
+    }
+
+    await validateContextAccess(userId, parsed.context, parsed.contextId);
+
     // Create or update file record
     const existingFile = await db.file.findUnique({
         where: { s3Key: data.key },
     });
 
     if (existingFile) {
+        if (existingFile.uploadedBy !== userId) {
+            throw new ForbiddenError('Cannot confirm uploads created by another user');
+        }
         return existingFile;
     }
-
-    // Parse key to get context info
-    const keyParts = data.key.split('/');
-    if (keyParts.length < 3) {
-        throw new AppError(ErrorCode.VALIDATION_ERROR, 'Invalid file key', 400);
-    }
-
-    const context = keyParts[0];
-    const contextId = keyParts[1];
-    const filename = keyParts.slice(2).join('/');
 
     const file = await db.file.create({
         data: {
             s3Key: data.key,
-            filename,
-            mimeType: 'application/octet-stream', // Would need to be passed or detected
-            sizeBytes: 0, // Would need to be updated by a Lambda function after upload
-            context,
-            contextId,
+            filename: parsed.filename,
+            mimeType: tokenPayload.mimeType,
+            sizeBytes: tokenPayload.sizeBytes,
+            context: parsed.context,
+            contextId: parsed.contextId,
             uploadedBy: userId,
         },
     });
@@ -81,7 +107,8 @@ export async function getDownloadUrl(userId: string, fileId: string) {
     const url = await generatePresignedDownloadUrl(file.s3Key);
 
     return {
-        url,
+        url: url.downloadUrl,
+        expiresAt: url.expiresAt,
         filename: file.filename,
         mimeType: file.mimeType,
     };
@@ -199,4 +226,35 @@ async function validateContextAccess(
         default:
             throw new ForbiddenError('Invalid upload context');
     }
+}
+
+function parseUploadKey(
+    key: string
+): { context: FileContextTypeType; contextId: string; filename: string } {
+    const parts = key.split('/');
+    if (parts.length < 3) {
+        throw new AppError(ErrorCode.VALIDATION_ERROR, 'Invalid file key', 400);
+    }
+
+    const [context, contextId, ...filenameParts] = parts;
+    const allowedContexts = new Set<string>(Object.values(FileContextType));
+
+    if (!allowedContexts.has(context)) {
+        throw new AppError(ErrorCode.VALIDATION_ERROR, 'Invalid upload context', 400);
+    }
+
+    if (!UUID_REGEX.test(contextId)) {
+        throw new AppError(ErrorCode.VALIDATION_ERROR, 'Invalid file key context', 400);
+    }
+
+    const filename = filenameParts.join('/');
+    if (!filename) {
+        throw new AppError(ErrorCode.VALIDATION_ERROR, 'Invalid file key filename', 400);
+    }
+
+    return {
+        context: context as FileContextTypeType,
+        contextId,
+        filename,
+    };
 }

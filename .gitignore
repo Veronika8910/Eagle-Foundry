@@ -40,3 +40,8 @@ POSTMAN_TESTING.md
 *.pem
 
 resend.webp
+
+# TypeScript build artifacts
+*.tsbuildinfo
+*.md
+!README.md

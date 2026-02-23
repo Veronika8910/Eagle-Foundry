@@ -20,6 +20,7 @@ export async function createApplication(data: {
     profileId: string;
     coverLetter?: string | null;
     resumeUrl?: string | null;
+    formAnswers?: Record<string, unknown> | null;
 }) {
     return db.application.create({
         data: {
@@ -27,6 +28,7 @@ export async function createApplication(data: {
             profileId: data.profileId,
             coverLetter: data.coverLetter,
             resumeUrl: data.resumeUrl,
+            formAnswers: data.formAnswers ?? undefined,
             status: 'SUBMITTED',
             statusHistory: {
                 create: {
@@ -132,7 +134,22 @@ export async function listByProfileId(
         }),
         include: {
             opportunity: {
-                select: { id: true, title: true, status: true },
+                select: {
+                    id: true,
+                    title: true,
+                    status: true,
+                    budgetType: true,
+                    budgetRange: true,
+                    tags: true,
+                    publishedAt: true,
+                    closedAt: true,
+                    org: {
+                        select: { id: true, name: true },
+                    },
+                    _count: {
+                        select: { applications: true },
+                    },
+                },
             },
         },
     });

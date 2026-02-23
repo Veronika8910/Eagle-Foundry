@@ -23,6 +23,22 @@ export interface CursorPaginationResult<T> {
 }
 
 /**
+ * Parse and clamp a pagination limit from query params.
+ */
+export function parseLimit(value: unknown, defaultLimit: number = PAGINATION.DEFAULT_LIMIT): number {
+    if (typeof value !== 'string' || !value.trim()) {
+        return defaultLimit;
+    }
+
+    const num = Number.parseInt(value, 10);
+    if (!Number.isFinite(num) || num < 1) {
+        return defaultLimit;
+    }
+
+    return Math.min(num, PAGINATION.MAX_LIMIT);
+}
+
+/**
  * Build Prisma cursor pagination options
  */
 export function buildCursorPagination(

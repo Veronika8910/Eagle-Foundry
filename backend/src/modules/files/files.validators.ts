@@ -16,6 +16,7 @@ export const presignUploadSchema = z.object({
 
 export const confirmUploadSchema = z.object({
     key: z.string().min(1),
+    confirmToken: z.string().min(1),
 });
 
 export type PresignUploadInput = z.infer<typeof presignUploadSchema>;

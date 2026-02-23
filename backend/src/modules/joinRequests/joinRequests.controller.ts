@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as joinRequestsService from './joinRequests.service.js';
 import { success, created, paginated } from '../../utils/response.js';
+import { parseLimit } from '../../utils/pagination.js';
 import {
     CreateJoinRequestInput,
     UpdateJoinRequestInput,
@@ -37,7 +38,7 @@ export async function getMyJoinRequests(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED' | undefined,
         };
         const result = await joinRequestsService.getMyJoinRequests(
@@ -80,7 +81,7 @@ export async function getStartupJoinRequests(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED' | undefined,
         };
         const result = await joinRequestsService.getStartupJoinRequests(

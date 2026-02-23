@@ -1,4 +1,4 @@
-import { StartupStatus } from '@prisma/client';
+import { StartupStatus, UserRole } from '@prisma/client';
 import { db } from '../../connectors/db.js';
 import * as startupsRepo from './startups.repo.js';
 import { AppError, NotFoundError, ForbiddenError } from '../../middlewares/errorHandler.js';
@@ -39,11 +39,16 @@ export async function createStartup(userId: string, data: CreateStartupInput) {
 /**
  * Get startup by ID
  */
-export async function getStartupById(id: string, userId?: string) {
+export async function getStartupById(id: string, userId?: string, userRole?: UserRole) {
     const startup = await startupsRepo.findByIdWithMembers(id);
 
     if (!startup) {
         throw new NotFoundError('Startup');
+    }
+
+    // Admins can view any startup (needed for review workflow)
+    if (userRole === UserRole.UNIVERSITY_ADMIN) {
+        return startup;
     }
 
     // Check visibility rules
@@ -207,33 +212,39 @@ export async function listStartups(userId: string, query: ListStartupsQuery) {
         select: { id: true },
     });
 
-    // Default to approved status for listing
-    let status: StartupStatus | StartupStatus[] = StartupStatus.APPROVED;
-
-    // If query has specific status and user is viewing their own, allow
-    if (query.status) {
-        status = query.status as StartupStatus;
-    }
+    const requestedStatus = query.status as StartupStatus | undefined;
+    const includePublicApproved =
+        !requestedStatus || requestedStatus === StartupStatus.APPROVED;
+    const ownStatus =
+        requestedStatus && requestedStatus !== StartupStatus.APPROVED
+            ? requestedStatus
+            : undefined;
 
     return startupsRepo.listStartups({
         cursor: query.cursor,
         limit: query.limit,
-        status,
+        includePublicApproved,
+        ownStatus,
         tags: query.tags,
         stage: query.stage,
         search: query.search,
-        profileId: profile?.id, // Include own startups
+        profileId: profile?.id,
     });
 }
 
 /**
  * Get startup team members
  */
-export async function getTeamMembers(startupId: string, userId?: string) {
+export async function getTeamMembers(startupId: string, userId?: string, userRole?: UserRole) {
     const startup = await startupsRepo.findById(startupId);
 
     if (!startup) {
         throw new NotFoundError('Startup');
+    }
+
+    // Admins can view any startup's team
+    if (userRole === UserRole.UNIVERSITY_ADMIN) {
+        return startupsRepo.getTeamMembers(startupId);
     }
 
     // Check visibility

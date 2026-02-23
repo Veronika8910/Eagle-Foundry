@@ -259,7 +259,7 @@ export async function login(input: LoginInput): Promise<AuthTokens> {
  * Refresh access token
  */
 export async function refreshAccessToken(refreshToken: string): Promise<AuthTokens> {
-    // Verify refresh token - will throw if invalid  
+    // Verify refresh token JWT signature — will throw if invalid or expired
     try {
         verifyRefreshToken(refreshToken);
     } catch {
@@ -278,7 +278,8 @@ export async function refreshAccessToken(refreshToken: string): Promise<AuthToke
     }
 
     if (storedToken.expiresAt < new Date()) {
-        await db.refreshToken.delete({ where: { id: storedToken.id } });
+        // Clean up expired token; use deleteMany to avoid P2025 if already gone
+        await db.refreshToken.deleteMany({ where: { id: storedToken.id } });
         throw new AppError(ErrorCode.TOKEN_EXPIRED, 'Refresh token has expired', 401);
     }
 
@@ -288,8 +289,15 @@ export async function refreshAccessToken(refreshToken: string): Promise<AuthToke
         throw new AppError(ErrorCode.ACCOUNT_SUSPENDED, 'Account is not active', 403);
     }
 
-    // Delete old token and generate new ones (rotation)
-    await db.refreshToken.delete({ where: { id: storedToken.id } });
+    // Atomically delete the old token and create the new one.
+    // deleteMany is used so a concurrent request that already consumed
+    // the same token does not cause a P2025 "record not found" crash.
+    const deleted = await db.refreshToken.deleteMany({ where: { id: storedToken.id } });
+
+    if (deleted.count === 0) {
+        // Another concurrent request already consumed this token
+        throw new AppError(ErrorCode.TOKEN_INVALID, 'Refresh token already used', 401);
+    }
 
     const tokens = await generateTokens(user);
 

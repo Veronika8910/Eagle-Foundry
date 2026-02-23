@@ -63,7 +63,8 @@ describe('Auth Integration Tests', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.data).toHaveProperty('accessToken');
-        expect(res.body.data).toHaveProperty('refreshToken');
+        expect(res.body.data).not.toHaveProperty('refreshToken');
+        expect(res.headers['set-cookie']).toBeDefined();
     });
 
     it('should fail login with incorrect password', async () => {

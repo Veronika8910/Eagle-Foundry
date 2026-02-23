@@ -27,7 +27,12 @@ export function hashOtp(otp: string): string {
 
 export function verifyOtp(otp: string, hashedOtp: string): boolean {
     const otpHash = hashOtp(otp);
-    return crypto.timingSafeEqual(Buffer.from(otpHash), Buffer.from(hashedOtp));
+    const otpHashBuf = Buffer.from(otpHash);
+    const hashedOtpBuf = Buffer.from(hashedOtp);
+    if (otpHashBuf.length !== hashedOtpBuf.length) {
+        return false;
+    }
+    return crypto.timingSafeEqual(otpHashBuf, hashedOtpBuf);
 }
 
 // JWT tokens

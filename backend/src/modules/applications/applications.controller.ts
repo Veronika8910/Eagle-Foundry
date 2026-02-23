@@ -3,6 +3,7 @@ import * as applicationsService from './applications.service.js';
 import { success, created, paginated } from '../../utils/response.js';
 import { AppError } from '../../middlewares/errorHandler.js';
 import { ErrorCode } from '../../utils/response.js';
+import { parseLimit } from '../../utils/pagination.js';
 import {
     CreateApplicationInput,
     UpdateApplicationStatusInput,
@@ -39,7 +40,7 @@ export async function getMyApplications(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as 'SUBMITTED' | 'SHORTLISTED' | 'INTERVIEW' | 'SELECTED' | 'REJECTED' | 'WITHDRAWN' | undefined,
         };
         const result = await applicationsService.getMyApplications(
@@ -85,7 +86,7 @@ export async function getOpportunityApplications(
         }
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             status: req.query.status as 'SUBMITTED' | 'SHORTLISTED' | 'INTERVIEW' | 'SELECTED' | 'REJECTED' | 'WITHDRAWN' | undefined,
         };
         const result = await applicationsService.getOpportunityApplications(

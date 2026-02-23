@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import * as authService from './auth.service.js';
-import { success, created } from '../../utils/response.js';
+import { success, created, ErrorCode } from '../../utils/response.js';
+import { AppError } from '../../middlewares/errorHandler.js';
+import {
+    clearRefreshTokenCookie,
+    extractRefreshToken,
+    setRefreshTokenCookie,
+} from '../../utils/cookies.js';
 import {
     StudentSignupInput,
     CompanySignupInput,
@@ -9,7 +15,6 @@ import {
     ResendOtpInput,
     ForgotPasswordInput,
     ResetPasswordInput,
-    RefreshTokenInput,
 } from './auth.validators.js';
 
 /**
@@ -99,7 +104,11 @@ export async function login(
 ): Promise<void> {
     try {
         const tokens = await authService.login(req.body);
-        success(res, tokens);
+        setRefreshTokenCookie(res, tokens.refreshToken);
+        success(res, {
+            accessToken: tokens.accessToken,
+            expiresIn: tokens.expiresIn,
+        });
     } catch (error) {
         next(error);
     }
@@ -109,13 +118,23 @@ export async function login(
  * POST /auth/refresh
  */
 export async function refreshToken(
-    req: Request<unknown, unknown, RefreshTokenInput>,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
-        const tokens = await authService.refreshAccessToken(req.body.refreshToken);
-        success(res, tokens);
+        const refreshToken = extractRefreshToken(req);
+
+        if (!refreshToken) {
+            throw new AppError(ErrorCode.TOKEN_INVALID, 'Refresh token is required', 401);
+        }
+
+        const tokens = await authService.refreshAccessToken(refreshToken);
+        setRefreshTokenCookie(res, tokens.refreshToken);
+        success(res, {
+            accessToken: tokens.accessToken,
+            expiresIn: tokens.expiresIn,
+        });
     } catch (error) {
         next(error);
     }
@@ -125,12 +144,16 @@ export async function refreshToken(
  * POST /auth/logout
  */
 export async function logout(
-    req: Request<unknown, unknown, RefreshTokenInput>,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
-        await authService.logout(req.body.refreshToken);
+        const refreshToken = extractRefreshToken(req);
+        if (refreshToken) {
+            await authService.logout(refreshToken);
+        }
+        clearRefreshTokenCookie(res);
         success(res, { message: 'Logged out successfully' });
     } catch (error) {
         next(error);

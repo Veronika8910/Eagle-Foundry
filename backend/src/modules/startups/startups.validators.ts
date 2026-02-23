@@ -1,4 +1,11 @@
 import { z } from 'zod';
+import { httpUrlSchema } from '../../middlewares/validate.js';
+
+export const customQuestionSchema = z.object({
+    id: z.string().min(1),
+    question: z.string().min(1).max(500),
+    required: z.boolean().optional().default(false),
+});
 
 export const createStartupSchema = z.object({
     name: z.string().min(1, 'Name is required').max(200),
@@ -6,7 +13,7 @@ export const createStartupSchema = z.object({
     description: z.string().max(5000).optional().nullable(),
     stage: z.string().max(100).optional().nullable(),
     tags: z.array(z.string().max(50)).max(10).optional(),
-    logoUrl: z.string().url().optional().nullable(),
+    logoUrl: httpUrlSchema.optional().nullable(),
 });
 
 export const updateStartupSchema = z.object({
@@ -15,7 +22,9 @@ export const updateStartupSchema = z.object({
     description: z.string().max(5000).optional().nullable(),
     stage: z.string().max(100).optional().nullable(),
     tags: z.array(z.string().max(50)).max(10).optional(),
-    logoUrl: z.string().url().optional().nullable(),
+    logoUrl: httpUrlSchema.optional().nullable(),
+    acceptingJoinRequests: z.boolean().optional(),
+    customQuestions: z.array(customQuestionSchema).max(20).optional().nullable(),
 });
 
 export const listStartupsQuerySchema = z.object({

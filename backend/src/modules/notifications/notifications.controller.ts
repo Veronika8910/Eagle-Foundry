@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as notificationsService from './notifications.service.js';
 import { success, paginated } from '../../utils/response.js';
+import { parseLimit } from '../../utils/pagination.js';
 
 /**
  * GET /notifications
@@ -13,7 +14,7 @@ export async function getNotifications(
     try {
         const query = {
             cursor: req.query.cursor as string | undefined,
-            limit: parseInt(req.query.limit as string, 10) || 20,
+            limit: parseLimit(req.query.limit),
             unreadOnly: req.query.unreadOnly === 'true',
         };
         const result = await notificationsService.getNotifications(req.user!.userId, query);
@@ -67,8 +68,8 @@ export async function getUnreadCount(
     next: NextFunction
 ): Promise<void> {
     try {
-        const count = await notificationsService.getUnreadCount(req.user!.userId);
-        success(res, { count });
+        const result = await notificationsService.getUnreadCount(req.user!.userId);
+        success(res, result);
     } catch (error) {
         next(error);
     }

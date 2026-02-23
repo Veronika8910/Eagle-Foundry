@@ -1,3 +1,4 @@
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
@@ -16,6 +17,7 @@ const reactSnippet = `export function OpportunityInvite() {
 }`;
 
 export function ReactEmailSection(): JSX.Element {
+  const navigate = useNavigate();
   return (
     <SectionShell>
       <div className="mx-auto max-w-3xl text-center">
@@ -24,9 +26,6 @@ export function ReactEmailSection(): JSX.Element {
           title="Build product experiences with Eagle-Foundry"
           description="As a company, you can upload projects that you are looking to outsource to out student builders and upload full-time opportunities for students to apply to as well."
         />
-        <div className="mt-6">
-          <Button className="px-6">View integration guide</Button>
-        </div>
       </div>
 
       <motion.div
@@ -49,7 +48,7 @@ export function ReactEmailSection(): JSX.Element {
             <div className="mb-3 h-10 w-10 rounded-full border border-cyan-200/60 bg-cyan-300/30" />
             <p className="text-xl font-semibold">Interview request received</p>
             <p className="mt-2 text-sm text-zinc-300">Helio Labs moved your application to INTERVIEW.</p>
-            <Button withBorderEffect={false} className="mt-5 rounded-md bg-cyan-400 text-black hover:bg-cyan-300">
+            <Button withBorderEffect={false} className="mt-5 rounded-md bg-cyan-400 text-black hover:bg-cyan-300" onClick={() => navigate('/student/dashboard')}>
               Review update
             </Button>
           </div>

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { httpUrlSchema } from '../../middlewares/validate.js';
 
 export const updateProfileSchema = z.object({
     firstName: z.string().min(1).max(100).optional(),
@@ -7,22 +8,22 @@ export const updateProfileSchema = z.object({
     gradYear: z.number().int().min(2000).max(2100).optional().nullable(),
     bio: z.string().max(2000).optional().nullable(),
     skills: z.array(z.string().max(50)).max(20).optional(),
-    linkedinUrl: z.string().url().optional().nullable(),
-    githubUrl: z.string().url().optional().nullable(),
+    linkedinUrl: httpUrlSchema.optional().nullable(),
+    githubUrl: httpUrlSchema.optional().nullable(),
 });
 
 export const createPortfolioItemSchema = z.object({
     title: z.string().min(1, 'Title is required').max(200),
     description: z.string().max(2000).optional().nullable(),
-    url: z.string().url().optional().nullable(),
-    imageUrl: z.string().url().optional().nullable(),
+    url: httpUrlSchema.optional().nullable(),
+    imageUrl: httpUrlSchema.optional().nullable(),
 });
 
 export const updatePortfolioItemSchema = z.object({
     title: z.string().min(1).max(200).optional(),
     description: z.string().max(2000).optional().nullable(),
-    url: z.string().url().optional().nullable(),
-    imageUrl: z.string().url().optional().nullable(),
+    url: httpUrlSchema.optional().nullable(),
+    imageUrl: httpUrlSchema.optional().nullable(),
 });
 
 export const presignResumeSchema = z.object({

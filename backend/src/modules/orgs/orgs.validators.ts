@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { emailSchema } from '../../middlewares/validate.js';
+import { emailSchema, httpUrlSchema } from '../../middlewares/validate.js';
 
 export const updateOrgSchema = z.object({
     name: z.string().min(1).max(200).optional(),
     description: z.string().max(2000).optional().nullable(),
-    website: z.string().url().optional().nullable(),
-    logoUrl: z.string().url().optional().nullable(),
+    website: httpUrlSchema.optional().nullable(),
+    logoUrl: httpUrlSchema.optional().nullable(),
 });
 
 export const addMemberSchema = z.object({
