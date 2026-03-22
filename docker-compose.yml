@@ -1,19 +1,34 @@
 services:
-  api:
+  frontend:
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DATABASE_URL=${DATABASE_URL}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost,http://localhost:80}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-eaglefoundry}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-eaglefoundry}?schema=public
       - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - JWT_ACCESS_EXPIRES_IN=${JWT_ACCESS_EXPIRES_IN:-15m}
       - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN:-7d}
-      - STUDENT_EMAIL_DOMAIN=${STUDENT_EMAIL_DOMAIN}
+      - REFRESH_COOKIE_NAME=${REFRESH_COOKIE_NAME:-ef_refresh_token}
+      - REFRESH_COOKIE_DOMAIN=${REFRESH_COOKIE_DOMAIN:-}
+      - REFRESH_COOKIE_SAME_SITE=${REFRESH_COOKIE_SAME_SITE:-lax}
+      - REFRESH_COOKIE_SECURE=${REFRESH_COOKIE_SECURE:-true}
+      - UPLOAD_TOKEN_SECRET=${UPLOAD_TOKEN_SECRET}
+      - STUDENT_EMAIL_DOMAIN=${STUDENT_EMAIL_DOMAIN:-ashland.edu}
       - BLOCKED_EMAIL_DOMAINS=${BLOCKED_EMAIL_DOMAINS}
       - OTP_TTL_MINUTES=${OTP_TTL_MINUTES:-10}
       - OTP_MAX_ATTEMPTS=${OTP_MAX_ATTEMPTS:-5}
@@ -21,9 +36,17 @@ services:
       - OTP_SEND_LIMIT_PER_HOUR=${OTP_SEND_LIMIT_PER_HOUR:-5}
       - OTP_HASH_PEPPER=${OTP_HASH_PEPPER}
       - MFA_ENCRYPTION_KEY=${MFA_ENCRYPTION_KEY}
+      - MFA_CHALLENGE_TTL_MINUTES=${MFA_CHALLENGE_TTL_MINUTES:-5}
+      - MFA_MAX_ATTEMPTS=${MFA_MAX_ATTEMPTS:-5}
+      - MFA_ISSUER=${MFA_ISSUER:-Eagle-Foundry}
+      - MFA_BACKUP_CODES_COUNT=${MFA_BACKUP_CODES_COUNT:-10}
       - MFA_BACKUP_CODE_PEPPER=${MFA_BACKUP_CODE_PEPPER}
+      - AWS_KMS_KEY_ID=${AWS_KMS_KEY_ID:-}
       - FIELD_ENCRYPTION_HASH_PEPPER=${FIELD_ENCRYPTION_HASH_PEPPER}
-      - UPLOAD_TOKEN_SECRET=${UPLOAD_TOKEN_SECRET}
+      - E2EE_REQUIRED=${E2EE_REQUIRED:-false}
+      - E2EE_ALLOW_LEGACY_THREADS=${E2EE_ALLOW_LEGACY_THREADS:-true}
+      - LOGIN_MAX_FAILED_ATTEMPTS=${LOGIN_MAX_FAILED_ATTEMPTS:-5}
+      - LOGIN_LOCKOUT_MINUTES=${LOGIN_LOCKOUT_MINUTES:-30}
       - AWS_REGION=${AWS_REGION}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -40,12 +63,10 @@ services:
       interval: 30s
       timeout: 3s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
   db:
     image: postgres:15-alpine
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-eaglefoundry}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}

@@ -22,6 +22,9 @@ RUN npm run build
 # Production stage
 FROM node:20-alpine AS production
 
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
 WORKDIR /app
 
 # Copy package files
@@ -37,6 +40,10 @@ RUN npx prisma generate
 # Copy built application
 COPY --from=builder /app/dist ./dist
 
+# Copy entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
@@ -51,8 +58,9 @@ USER nodejs
 EXPOSE 3000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Start application
-CMD ["node", "dist/index.js"]
+# Use dumb-init as PID 1, run migrations then start app
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["/app/entrypoint.sh"]

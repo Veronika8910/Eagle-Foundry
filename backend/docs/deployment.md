@@ -49,13 +49,49 @@
      eagle-foundry-backend
    ```
 
+## Full-Stack Docker (Frontend + Backend + DB)
+
+From the repository root:
+
+```bash
+docker compose up -d
+```
+
+- Frontend: http://localhost (port 80)
+- Backend API: proxied at /api
+- Database: PostgreSQL on port 5432
+
+## CI/CD (GitHub Actions)
+
+### Required GitHub Secrets
+
+Configure these in **Settings → Secrets and variables → Actions**:
+
+| Secret | Description |
+|--------|-------------|
+| `DOCKERHUB_USERNAME` | Docker Hub username |
+| `DOCKERHUB_TOKEN` | Docker Hub access token |
+| `EC2_HOST` | EC2 instance hostname or IP |
+| `EC2_USER` | SSH user (e.g. `ubuntu`) |
+| `EC2_SSH_KEY` | Private key for SSH (full PEM content) |
+| `PROD_ENV_FILE` | Production `.env` file contents (all variables) |
+| `AWS_ACCESS_KEY_ID` | For Lambda deploy |
+| `AWS_SECRET_ACCESS_KEY` | For Lambda deploy |
+| `AWS_REGION` | e.g. `us-east-1` |
+| `LAMBDA_FUNCTION_NAME` | OTP email consumer Lambda function name/ARN |
+
+### EC2 Setup
+
+1. Create `/opt/eagle-foundry` on the EC2 instance.
+2. Ensure Docker and Docker Compose are installed.
+3. Add the deploy key's public half to `~/.ssh/authorized_keys`.
+
 ## Cloud Infrastructure (AWS)
 
-- **ECS/Fargate**: Host the Docker container.
-- **RDS (Postgres)**: Database instance.
-- **ElastiCache (Redis)**: Optional for caching/rate limiting.
+- **EC2**: Hosts Docker containers (frontend, backend, postgres).
+- **RDS (Postgres)**: Optional; can use postgres container on EC2.
 - **SQS/SNS**: Event bus for async tasks.
-- **Lambda**: Consumers for SQS events (emails, etc.).
+- **Lambda**: OTP email consumer (auto-deployed on `backend/lambda/**` changes).
 
 ### Environment Variables
 Ensure all required variables defined in `.env.example` are set in the ECS Task Definition or Parameter Store.

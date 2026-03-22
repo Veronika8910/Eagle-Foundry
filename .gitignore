@@ -41,6 +41,10 @@ POSTMAN_TESTING.md
 
 resend.webp
 
+# Lambda build artifacts
+backend/lambda/**/lambda.zip
+backend/lambda/**/dist/
+
 # TypeScript build artifacts
 *.tsbuildinfo
 *.md
