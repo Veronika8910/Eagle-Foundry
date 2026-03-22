@@ -99,7 +99,8 @@ aws sesv2 put-account-details \
 After production access is granted:
 
 1. **Verify sending limits**  
-   Check the SES dashboard. Limits will be higher (typically 50,000+ messages per 24 hours).
+   Check the SES Account dashboard (or use GetAccount API) for your actual regional sending quota.
+   Quotas vary by account and region; request an increase via AWS Support if needed.
 
 2. **Set up a suppression list**  
    In SES Console, review **Suppression list** so bounces and complaints are recorded.
