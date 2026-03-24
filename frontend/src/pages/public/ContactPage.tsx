@@ -72,7 +72,19 @@ export default function ContactPage(): JSX.Element {
   }, []);
 
   const handleSubmit = () => {
-    // Replace with your actual form submission logic
+    const { name, email, subject, message, type } = formState;
+    const body = [
+      type && `Type: ${type}`,
+      `Name: ${name}`,
+      `Email: ${email}`,
+      '',
+      message,
+    ].filter(Boolean).join('\n');
+
+    window.open(
+      `mailto:hello@eagle-foundry.com?subject=${encodeURIComponent(subject || 'Contact from Eagle-Foundry')}&body=${encodeURIComponent(body)}`,
+      '_blank',
+    );
     setSubmitted(true);
   };
 

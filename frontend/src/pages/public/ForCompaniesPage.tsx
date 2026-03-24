@@ -61,7 +61,7 @@ const useCases = [
   {
     icon: Zap,
     title: 'Hire before anyone else',
-    description: 'Publish internships and roles to an audience that isn't on LinkedIn. Get applicants who have already shipped something.',
+    description: "Publish internships and roles to an audience that isn't on LinkedIn. Get applicants who have already shipped something.",
   },
   {
     icon: DollarSign,
@@ -71,7 +71,7 @@ const useCases = [
   {
     icon: ShieldCheck,
     title: 'Verified & admin-approved',
-    description: 'Every student startup is reviewed before being listed. You're never sifting through noise — only curated, serious projects.',
+    description: "Every student startup is reviewed before being listed. You're never sifting through noise — only curated, serious projects.",
   },
   {
     icon: BarChart2,

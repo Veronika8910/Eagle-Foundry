@@ -66,7 +66,7 @@ const features = [
   {
     icon: Trophy,
     title: 'Build your portfolio',
-    description: 'Every project, application, and role gets tracked. Your Eagle-Foundry portfolio is proof of what you've shipped.',
+    description: "Every project, application, and role gets tracked. Your Eagle-Foundry portfolio is proof of what you've shipped.",
   },
   {
     icon: Globe,
