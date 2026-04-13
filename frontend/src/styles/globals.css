@@ -4,11 +4,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Light mode tokens (default) ───────────────────────────────────────────── */
 :root {
+  --background: #DEDEDE;
+  --foreground: #111114;
+  --muted: #49494D;
+  --border: rgba(0, 0, 0, 0.06);
+  --elements: #F3F3F3;
+
+  /* Accent tokens */
+  --accent-amber: #FBBF24;
+  --accent-violet: #C4B5FD;
+}
+
+/* ─── Dark mode tokens ───────────────────────────────────────────────────────── */
+.dark {
   --background: #030303;
   --foreground: #f4f4f5;
   --muted: #a1a1aa;
-  --border: rgba(255, 255, 255, 0.14);
+  --border: rgba(255, 255, 255, 0.1);
+  --elements: #202020;
 }
 
 * {
@@ -23,13 +38,26 @@ body,
 
 body {
   margin: 0;
+  color: var(--foreground);
+  font-family: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
+  text-rendering: optimizeLegibility;
+  transition: background 0.3s ease, color 0.2s ease;
+}
+
+/* Light body background (default) */
+body {
+  background:
+    radial-gradient(circle at 15% -5%, rgba(251, 191, 36, 0.18), transparent 30%),
+    radial-gradient(circle at 85% 0%, rgba(196, 181, 253, 0.22), transparent 32%),
+    var(--background);
+}
+
+/* Dark body background */
+.dark body {
   background:
     radial-gradient(circle at 20% -10%, rgba(85, 108, 255, 0.18), transparent 28%),
     radial-gradient(circle at 82% 5%, rgba(255, 255, 255, 0.15), transparent 30%),
     var(--background);
-  color: var(--foreground);
-  font-family: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
-  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -38,20 +66,45 @@ a {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(196, 181, 253, 0.3);
 }
 
+/* ─── Landing grid ───────────────────────────────────────────────────────────── */
 .landing-grid {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   background-size: 42px 42px;
 }
 
+.dark .landing-grid {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+/* ─── Divider ────────────────────────────────────────────────────────────────── */
 .muted-divider {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.dark .muted-divider {
   border-color: rgba(255, 255, 255, 0.12);
 }
 
+/* ─── Glass card ─────────────────────────────────────────────────────────────── */
 .glass-card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.80) 48%,
+      rgba(250, 248, 255, 0.90) 100%
+    ),
+    rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 1px 24px rgba(196, 181, 253, 0.1), 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.dark .glass-card {
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: linear-gradient(
       160deg,
@@ -61,33 +114,55 @@ a {
     ),
     rgba(8, 8, 12, 0.88);
   backdrop-filter: blur(16px);
+  box-shadow: none;
 }
 
+/* ─── Hero rim glow ──────────────────────────────────────────────────────────── */
 .hero-rim {
+  box-shadow:
+    0 0 80px rgba(251, 191, 36, 0.18),
+    0 0 160px rgba(196, 181, 253, 0.28);
+}
+
+.dark .hero-rim {
   box-shadow:
     0 0 80px rgba(255, 255, 255, 0.1),
     0 0 160px rgba(46, 88, 255, 0.22);
 }
 
+/* ─── Heading gradient ───────────────────────────────────────────────────────── */
 .ef-heading-gradient {
   color: transparent;
-  background-image: linear-gradient(180deg, #ffffff 0%, #f3f4f6 38%, #a4a6ad 100%);
+  background-image: linear-gradient(160deg, #18181b 0%, #3f3f46 45%, #4D3B92 100%);
   -webkit-background-clip: text;
   background-clip: text;
+  text-shadow: none;
+  padding-bottom: 7px;
+}
+
+.dark .ef-heading-gradient {
+  background-image: linear-gradient(180deg, #ffffff 0%, #f3f4f6 38%, #a4a6ad 100%);
   text-shadow: 0 14px 32px rgba(255, 255, 255, 0.08);
 }
 
+/* ─── Buttons ────────────────────────────────────────────────────────────────── */
 .ef-button {
   --gradient-angle: 0deg;
   --p: 10%;
-  --btn-fill: #171717;
-  --btn-fill-hover: #1f1f1f;
-  --btn-border: rgba(255, 255, 255, 0.25);
+  --btn-fill: #18181b;
+  --btn-fill-hover: #27272a;
+  --btn-border: rgba(0, 0, 0, 0.2);
   position: relative;
   isolation: isolate;
   border: 1px solid var(--btn-border);
   background: var(--btn-fill);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dark .ef-button {
+  --btn-fill: #171717;
+  --btn-fill-hover: #1f1f1f;
+  --btn-border: rgba(255, 255, 255, 0.25);
 }
 
 .ef-button:active {
@@ -106,14 +181,36 @@ a {
     conic-gradient(
         from var(--gradient-angle, 0deg),
         transparent,
-        rgba(255, 255, 255, 0.94) var(--p),
+        rgba(196, 181, 253, 0.94) var(--p),
         transparent calc(var(--p) * 2)
       )
       border-box;
   animation: button-border-rotate 3s linear infinite;
 }
 
+.dark .ef-button.with-border-effect {
+  background: linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
+    conic-gradient(
+        from var(--gradient-angle, 0deg),
+        transparent,
+        rgba(255, 255, 255, 0.94) var(--p),
+        transparent calc(var(--p) * 2)
+      )
+      border-box;
+}
+
 .ef-button.with-border-effect:hover {
+  background: linear-gradient(var(--btn-fill-hover), var(--btn-fill-hover)) padding-box,
+    conic-gradient(
+        from var(--gradient-angle, 0deg),
+        transparent,
+        rgba(196, 181, 253, 0.94) var(--p),
+        transparent calc(var(--p) * 2)
+      )
+      border-box;
+}
+
+.dark .ef-button.with-border-effect:hover {
   background: linear-gradient(var(--btn-fill-hover), var(--btn-fill-hover)) padding-box,
     conic-gradient(
         from var(--gradient-angle, 0deg),
@@ -130,19 +227,49 @@ a {
 }
 
 .ef-button-primary {
+  --btn-fill: #FBBF24;
+  --btn-fill-hover: #f59e0b;
+  --btn-border: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  color: #18181b;
+}
+
+.dark .ef-button-primary {
+  --btn-fill: #FBBF24;
+  --btn-fill-hover: #f59e0b;
+  --btn-border: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  color: #18181b;
+  /*
   --btn-fill: #ffffff;
   --btn-fill-hover: #e4e4e7;
   --btn-border: rgba(255, 255, 255, 0.62);
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+  color: #18181b;
+  */
 }
 
 .ef-button-ghost {
+  --btn-fill: rgba(255, 255, 255, 0.7);
+  --btn-fill-hover: rgba(255, 255, 255, 0.9);
+  --btn-border: rgba(0, 0, 0, 0.12);
+  color: #18181b;
+}
+
+.dark .ef-button-ghost {
   --btn-fill: rgba(10, 10, 10, 0.84);
   --btn-fill-hover: #09090b;
   --btn-border: rgba(255, 255, 255, 0.2);
+  color: inherit;
 }
 
 .ef-button-outline {
+  --btn-fill: transparent;
+  --btn-fill-hover: rgba(196, 181, 253, 0.1);
+  --btn-border: rgba(196, 181, 253, 0.4);
+}
+
+.dark .ef-button-outline {
   --btn-fill: transparent;
   --btn-fill-hover: rgba(255, 255, 255, 0.1);
   --btn-border: rgba(255, 255, 255, 0.3);
@@ -160,6 +287,7 @@ a {
   }
 }
 
+/* ─── ef-card ────────────────────────────────────────────────────────────────── */
 .ef-card {
   --x: 50;
   --y: 50;
@@ -173,6 +301,13 @@ a {
 
 .ef-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196, 181, 253, 0.2), 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.dark .ef-card:hover {
+  transform: translateY(-2px);
+  /*
+  box-shadow: 0 8px 24px rgba(196, 181, 253, 0.2), 0 2px 8px rgba(0, 0, 0, 0.06); */
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -189,7 +324,15 @@ a {
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: radial-gradient(800px circle at var(--x-px) var(--y-px), rgba(255, 255, 255, 0.28), transparent 40%);
+  /*background: radial-gradient(800px circle at var(--x-px) var(--y-px), rgba(251, 191, 36, 0.18), transparent 40%);*/
+  background: radial-gradient(800px circle at var(--x-px) var(--y-px), rgba(251, 191, 36, 0.18), transparent 40%);
+
+}
+
+.dark .ef-card::before,
+.dark .ef-card::after {
+  background: radial-gradient(800px circle at var(--x-px) var(--y-px), #FBBF24, transparent 40%);
+  /*background: radial-gradient(800px circle at var(--x-px) var(--y-px), rgba(255, 255, 255, 0.28), transparent 40%);*/
 }
 
 .ef-card::before {
@@ -197,10 +340,12 @@ a {
   opacity: 0.58;
 }
 
+
 .ef-card::after {
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  background: radial-gradient(800px circle at var(--x-px) var(--y-px),  rgba(250, 204, 21, 0.14), transparent 38%);
+}
+
+.dark .ef-card::after {
   background: radial-gradient(800px circle at var(--x-px) var(--y-px), rgba(255, 255, 255, 0.36), transparent 38%);
 }
 
@@ -217,118 +362,14 @@ a {
   opacity: 0.42;
 }
 
-.hero-cube-stage {
-  perspective: 1400px;
-}
 
-.hero-cube {
-  --cube-size: 220px;
-  --cube-half: 110px;
-  position: relative;
-  width: var(--cube-size);
-  height: var(--cube-size);
-  transform-style: preserve-3d;
-  animation: cube-spin 14s linear infinite;
-}
-
-@media (min-width: 768px) {
-  .hero-cube {
-    --cube-size: 300px;
-    --cube-half: 150px;
-  }
-}
-
-.hero-cube-face {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  padding: 10px;
-  border-radius: 1.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03));
-  box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.06);
-  backface-visibility: hidden;
-}
-
-.hero-cube-tile {
-  border-radius: 0.72rem;
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  background: linear-gradient(170deg, rgba(250, 250, 252, 0.95), rgba(145, 145, 155, 0.55));
-}
-
-.hero-cube-reflection {
-  position: absolute;
-  left: 50%;
-  top: 56%;
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.hero-cube-reflection.main {
-  width: 540px;
-  height: 200px;
-  background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0));
-  filter: blur(26px);
-  animation: reflection-sweep 6s ease-in-out infinite;
-}
-
-.hero-cube-reflection.secondary {
-  width: 420px;
-  height: 150px;
-  background: linear-gradient(95deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0));
-  filter: blur(22px);
-  animation: reflection-sweep 6s ease-in-out infinite reverse;
-}
-
-.hero-cube-reflection.toward-copy {
-  width: 840px;
-  height: 240px;
-  left: 24%;
-  top: 50%;
-  background: linear-gradient(to left, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2) 40%, rgba(255, 255, 255, 0) 80%);
-  filter: blur(34px);
-  animation: reflection-copy-sweep 7s ease-in-out infinite;
-}
-
-@keyframes cube-spin {
-  from {
-    transform: rotateX(-20deg) rotateY(0deg) rotateZ(0deg);
-  }
-  to {
-    transform: rotateX(-20deg) rotateY(360deg) rotateZ(360deg);
-  }
-}
-
-@keyframes reflection-sweep {
-  0%,
-  100% {
-    opacity: 0.42;
-    transform: translate(-54%, -46%) rotate(-18deg);
-  }
-  50% {
-    opacity: 0.9;
-    transform: translate(-46%, -54%) rotate(12deg);
-  }
-}
-
-@keyframes reflection-copy-sweep {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: translate(-52%, -50%) rotate(-9deg);
-  }
-  50% {
-    opacity: 0.92;
-    transform: translate(-48%, -50%) rotate(-4deg);
-  }
-}
-
-/* Focus-visible ring for accessibility (buttons have their own; use for links, inputs, etc.) */
+/* ─── Focus rings ────────────────────────────────────────────────────────────── */
 .focus-ring:focus-visible {
   outline: none;
+  box-shadow: 0 0 0 2px rgba(196, 181, 253, 0.6);
+}
+
+.dark .focus-ring:focus-visible {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
@@ -338,10 +379,15 @@ a:focus-visible,
   outline: none;
 }
 
-/* Buttons already have focus-visible via component; ensure fallback for custom elements */
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: none;
+  box-shadow: 0 0 0 2px rgba(196, 181, 253, 0.5);
+}
+
+.dark input:focus-visible,
+.dark select:focus-visible,
+.dark textarea:focus-visible {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
 }
