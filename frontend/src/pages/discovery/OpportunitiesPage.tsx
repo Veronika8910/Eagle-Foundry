@@ -62,13 +62,13 @@ export default function OpportunitiesPage(): JSX.Element {
     {
       key: 'title',
       header: 'Title',
-      render: (row) => <span className="font-medium text-zinc-200">{row.title}</span>,
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.title}</span>,
     },
     {
       key: 'org',
       header: 'Organization',
       render: (row) => (
-        <span className="text-zinc-400">{row.org?.name ?? '—'}</span>
+        <span className="text-[var(--muted)]">{row.org?.name ?? '—'}</span>
       ),
     },
     {
@@ -90,11 +90,13 @@ export default function OpportunitiesPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Discovery</p>
-        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
-          Opportunities
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Discovery</p>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+            Opportunities
+          </h1>
+        </div>
+        <p className="mt-3 max-w-3xl text-sm text-[var(--foreground)] md:text-base">
           Browse company opportunities and find your next role.
         </p>
       </header>

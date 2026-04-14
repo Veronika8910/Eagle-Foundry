@@ -136,7 +136,7 @@ export default function OpportunityDetailPage(): JSX.Element {
     return (
       <div className="space-y-8">
         <h1 className="ef-heading-gradient text-4xl font-semibold">Opportunity not found</h1>
-        <Link to="/opportunities" className="text-sm text-zinc-400 underline hover:text-white">
+        <Link to="/opportunities" className="text-sm text-[var(--muted)] underline hover:text-[var(--foreground)]">
           Back to discovery
         </Link>
       </div>
@@ -146,27 +146,27 @@ export default function OpportunityDetailPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Discovery</p>
-        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
-          {opportunity.title}
-        </h1>
-        {opportunity.org && (
-          <p className="mt-2 text-lg text-zinc-300">
-            <Link
-              to={`/organizations/${opportunity.org.id}`}
-              className="text-zinc-300 underline underline-offset-2 hover:text-white"
-            >
-              {opportunity.org.name}
-            </Link>
-          </p>
-        )}
-        <div className="mt-3 flex flex-wrap gap-2">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Discovery</p>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+            {opportunity.title}
+          </h1>
           {opportunity.budgetType && (
             <Badge>{opportunity.budgetType as BudgetType}</Badge>
           )}
           <Badge>{opportunity.status}</Badge>
           {alreadyApplied && <Badge variant="success">Applied</Badge>}
         </div>
+        {opportunity.org && (
+          <p className="mt-2 text-lg text-[var(--muted)]">
+            <Link
+              to={`/organizations/${opportunity.org.id}`}
+              className="text-[var(--foreground)] underline underline-offset-2 hover:text-[var(--foreground)]"
+            >
+              {opportunity.org.name}
+            </Link>
+          </p>
+        )}
       </header>
 
       <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
@@ -174,7 +174,7 @@ export default function OpportunityDetailPage(): JSX.Element {
       {activeTab === 'Overview' && (
         <div className="space-y-4">
           {opportunity.description && (
-            <p className="text-sm text-zinc-400 whitespace-pre-wrap">{opportunity.description}</p>
+            <p className="text-sm text-[var(--muted)] whitespace-pre-wrap">{opportunity.description}</p>
           )}
         </div>
       )}
@@ -182,9 +182,9 @@ export default function OpportunityDetailPage(): JSX.Element {
       {activeTab === 'Requirements' && (
         <div className="space-y-4">
           {opportunity.requirements ? (
-            <p className="text-sm text-zinc-400 whitespace-pre-wrap">{opportunity.requirements}</p>
+            <p className="text-sm text-[var(--muted)] whitespace-pre-wrap">{opportunity.requirements}</p>
           ) : (
-            <p className="text-sm text-zinc-500">No requirements specified.</p>
+            <p className="text-sm text-[var(--muted)]">No requirements specified.</p>
           )}
         </div>
       )}
@@ -196,14 +196,14 @@ export default function OpportunityDetailPage(): JSX.Element {
               <p className="text-sm text-emerald-400 font-medium">
                 ✓ You have already applied to this opportunity
               </p>
-              <p className="mt-1 text-xs text-zinc-400">
+              <p className="mt-1 text-xs text-[var(--muted)]">
                 Check your applications page to track the status of your application.
               </p>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="space-y-4">
-                <p className="text-xs text-zinc-500 uppercase tracking-wide">Required Information</p>
+                <p className="text-xs text-[var(--muted)] uppercase tracking-wide">Required Information</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
                     label="First Name"
@@ -241,8 +241,8 @@ export default function OpportunityDetailPage(): JSX.Element {
               </div>
 
               {customQuestions.length > 0 && (
-                <div className="space-y-4 border-t border-white/10 pt-6">
-                  <p className="text-xs text-zinc-500 uppercase tracking-wide">Questions from the Organization</p>
+                <div className="space-y-4 border-t border-[var(--border)] pt-6">
+                  <p className="text-xs text-[var(--muted)] uppercase tracking-wide">Questions from the Organization</p>
                   {customQuestions.map((q) => (
                     <Textarea
                       key={q.id}

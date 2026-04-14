@@ -129,7 +129,7 @@ export default function ProjectDetailPage(): JSX.Element {
     return (
       <div className="space-y-8">
         <h1 className="ef-heading-gradient text-4xl font-semibold">Project not found</h1>
-        <Link to="/projects" className="text-sm text-zinc-400 underline hover:text-white">
+        <Link to="/projects" className="text-sm text-[var(--muted)] underline hover:text-[var(--foreground)]">
           Back to projects
         </Link>
       </div>
@@ -139,37 +139,37 @@ export default function ProjectDetailPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Discovery</p>
-        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">{project.title}</h1>
-        {project.org && (
-          <p className="mt-2 text-lg text-zinc-300">
-            <Link to={`/organizations/${project.org.id}`} className="text-zinc-300 underline underline-offset-2 hover:text-white">
-              {project.org.name}
-            </Link>
-          </p>
-        )}
-        <div className="mt-3 flex flex-wrap gap-2">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Discovery</p>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">{project.title}</h1>
           {project.budgetType && <Badge>{project.budgetType as BudgetType}</Badge>}
           {project.estimatedDuration && <Badge>{project.estimatedDuration}</Badge>}
           <Badge>{project.status}</Badge>
           {alreadySubmitted && <Badge variant="success">Submitted</Badge>}
         </div>
+        {project.org && (
+          <p className="mt-2 text-lg text-[var(--muted)]">
+            <Link to={`/organizations/${project.org.id}`} className="text-[var(--muted)] underline underline-offset-2 hover:text-[var(--foreground)]">
+              {project.org.name}
+            </Link>
+          </p>
+        )}
       </header>
 
       <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
 
       {activeTab === 'Overview' && (
         <div className="space-y-4">
-          {project.description && <p className="whitespace-pre-wrap text-sm text-zinc-400">{project.description}</p>}
+          {project.description && <p className="whitespace-pre-wrap text-sm text-[var(--muted)]">{project.description}</p>}
         </div>
       )}
 
       {activeTab === 'Requirements' && (
         <div className="space-y-4">
           {project.requirements ? (
-            <p className="whitespace-pre-wrap text-sm text-zinc-400">{project.requirements}</p>
+            <p className="whitespace-pre-wrap text-sm text-[var(--muted)]">{project.requirements}</p>
           ) : (
-            <p className="text-sm text-zinc-500">No requirements specified.</p>
+            <p className="text-sm text-[var(--muted)]">No requirements specified.</p>
           )}
         </div>
       )}
@@ -179,12 +179,12 @@ export default function ProjectDetailPage(): JSX.Element {
           {alreadySubmitted ? (
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
               <p className="text-sm font-medium text-emerald-400">✓ You have already submitted for this project</p>
-              <p className="mt-1 text-xs text-zinc-400">Check your applications page to track submission status.</p>
+              <p className="mt-1 text-xs text-[var(--muted)]">Check your applications page to track submission status.</p>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="space-y-4">
-                <p className="text-xs uppercase tracking-wide text-zinc-500">Required Information</p>
+                <p className="text-xs uppercase tracking-wide text-[var(--muted)]">Required Information</p>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <Input label="First Name" placeholder="Your first name" value={formFirstName} onChange={(e) => setFormFirstName(e.target.value)} />
                   <Input label="Last Name" placeholder="Your last name" value={formLastName} onChange={(e) => setFormLastName(e.target.value)} />
@@ -207,8 +207,8 @@ export default function ProjectDetailPage(): JSX.Element {
               </div>
 
               {customQuestions.length > 0 && (
-                <div className="space-y-4 border-t border-white/10 pt-6">
-                  <p className="text-xs uppercase tracking-wide text-zinc-500">Questions from the Organization</p>
+                <div className="space-y-4 border-t border-[var(--border)] pt-6">
+                  <p className="text-xs uppercase tracking-wide text-[var(--muted)]">Questions from the Organization</p>
                   {customQuestions.map((q) => (
                     <Textarea
                       key={q.id}

@@ -66,7 +66,7 @@ export default function StudentPublicProfilePage(): JSX.Element {
             {fullName}
           </h1>
           {(profile.major || profile.gradYear) && (
-            <p className="mt-2 text-zinc-400">
+            <p className="mt-2 text-[var(--muted)]">
               {[profile.major, profile.gradYear ? `Class of ${profile.gradYear}` : null]
                 .filter(Boolean)
                 .join(' · ')}
@@ -78,7 +78,7 @@ export default function StudentPublicProfilePage(): JSX.Element {
                 href={profile.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-zinc-400 underline underline-offset-2 hover:text-white"
+                className="text-sm text-[var(--muted)] underline underline-offset-2 hover:text-[var(--foreground)]"
               >
                 LinkedIn
               </a>
@@ -88,7 +88,7 @@ export default function StudentPublicProfilePage(): JSX.Element {
                 href={profile.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-zinc-400 underline underline-offset-2 hover:text-white"
+                className="text-sm text-[var(--muted)] underline underline-offset-2 hover:text-[var(--foreground)]"
               >
                 GitHub
               </a>
@@ -98,7 +98,7 @@ export default function StudentPublicProfilePage(): JSX.Element {
                 href={profile.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-zinc-400 underline underline-offset-2 hover:text-white"
+                className="text-sm text-[var(--muted)] underline underline-offset-2 hover:text-[var(--foreground)]"
               >
                 Resume
               </a>
@@ -108,7 +108,7 @@ export default function StudentPublicProfilePage(): JSX.Element {
       </header>
 
       {profile.bio && (
-        <p className="text-sm text-zinc-400 whitespace-pre-wrap max-w-3xl">{profile.bio}</p>
+        <p className="text-sm text-[var(--muted)] whitespace-pre-wrap max-w-3xl">{profile.bio}</p>
       )}
 
       {profile.skills?.length ? (
@@ -130,16 +130,16 @@ export default function StudentPublicProfilePage(): JSX.Element {
           {profile.portfolio?.length ? (
             profile.portfolio.map((item) => (
               <Card key={item.id} interactive>
-                <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+                <h3 className="text-lg font-semibold text-[var(--foreground)]">{item.title}</h3>
                 {item.description && (
-                  <p className="mt-2 text-sm text-zinc-400 line-clamp-3">{item.description}</p>
+                  <p className="mt-2 text-sm text-[var(--muted)] line-clamp-3">{item.description}</p>
                 )}
                 {item.url && (
                   <a
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-block text-sm text-zinc-400 underline hover:text-white"
+                    className="mt-2 inline-block text-sm text-[var(--muted)] underline hover:text-[var(--foreground)]"
                   >
                     View project
                   </a>
@@ -147,7 +147,7 @@ export default function StudentPublicProfilePage(): JSX.Element {
               </Card>
             ))
           ) : (
-            <p className="col-span-full text-sm text-zinc-500">No portfolio items yet.</p>
+            <p className="col-span-full text-sm text-[var(--muted)]">No portfolio items yet.</p>
           )}
         </div>
       )}
@@ -158,12 +158,12 @@ export default function StudentPublicProfilePage(): JSX.Element {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {(profile.startups as { id?: string; name?: string }[]).map((s, i) => (
                 <Card key={s.id ?? `startup-${i}`} interactive>
-                  <h3 className="text-lg font-semibold text-white">{s.name ?? 'Startup'}</h3>
+                  <h3 className="text-lg font-semibold text-[var(--foreground)]">{s.name ?? 'Startup'}</h3>
                 </Card>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-zinc-500">No startups linked yet.</p>
+            <p className="text-sm text-[var(--muted)]">No startups linked yet.</p>
           )}
         </div>
       )}

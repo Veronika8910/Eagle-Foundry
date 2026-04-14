@@ -23,7 +23,7 @@ export default function OrganizationDetailPage(): JSX.Element {
     return (
       <div className="space-y-8">
         <h1 className="ef-heading-gradient text-4xl font-semibold">Failed to load organization</h1>
-        <Link to="/organizations" className="text-sm text-zinc-400 underline hover:text-white">
+        <Link to="/organizations" className="text-sm text-[var(--muted)] underline hover:text-[var(--foreground)]">
           Back to discovery
         </Link>
       </div>
@@ -44,7 +44,7 @@ export default function OrganizationDetailPage(): JSX.Element {
     return (
       <div className="space-y-8">
         <h1 className="ef-heading-gradient text-4xl font-semibold">Organization not found</h1>
-        <Link to="/organizations" className="text-sm text-zinc-400 underline hover:text-white">
+        <Link to="/organizations" className="text-sm text-[var(--muted)] underline hover:text-[var(--foreground)]">
           Back to discovery
         </Link>
       </div>
@@ -54,31 +54,31 @@ export default function OrganizationDetailPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Discovery</p>
-        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
-          {org.name}
-        </h1>
-        {org.website && (
-          <a
-            href={org.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-block text-zinc-400 underline underline-offset-2 hover:text-white"
-          >
-            {org.website}
-          </a>
-        )}
-        <div className="mt-3 flex flex-wrap gap-2">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Discovery</p>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+            {org.name}
+          </h1>
           {org.isVerifiedBadge ? (
             <Badge variant="success">Verified</Badge>
           ) : (
             <Badge variant="warning">Verification Pending</Badge>
           )}
         </div>
+        {org.website && (
+          <a
+            href={org.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-block text-[var(--muted)] underline underline-offset-2 hover:text-[var(--foreground)]"
+          >
+            {org.website}
+          </a>
+        )}
       </header>
 
       {org.description && (
-        <p className="text-sm text-zinc-400 whitespace-pre-wrap max-w-3xl">{org.description}</p>
+        <p className="text-sm text-[var(--muted)] whitespace-pre-wrap max-w-3xl">{org.description}</p>
       )}
     </div>
   );
