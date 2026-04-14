@@ -6,7 +6,7 @@ export default function UnauthorizedPage(): JSX.Element {
   const navigate = useNavigate();
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-black px-4 text-white">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-[var(--background)] px-4 text-[var(--foreground)]">
       <div className="pointer-events-none absolute inset-0 landing-grid opacity-[0.06]" />
       <div className="pointer-events-none absolute left-1/2 top-[-16rem] h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-white/10 blur-[180px]" />
 
@@ -15,7 +15,7 @@ export default function UnauthorizedPage(): JSX.Element {
           <ShieldX size={32} className="text-red-400" />
         </div>
         <h1 className="ef-heading-gradient text-2xl font-semibold md:text-3xl">Unauthorized</h1>
-        <p className="mx-auto mt-3 max-w-md text-sm text-zinc-400">
+        <p className="mx-auto mt-3 max-w-md text-sm text-[var(--muted)]">
           You do not have permission to access this page. If you believe this is an error, please contact an administrator.
         </p>
         <div className="mt-6 flex justify-center gap-3">
