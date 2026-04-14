@@ -1,55 +1,11 @@
-import { type PointerEvent, useCallback, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, UserPlus, Lightbulb, Users, TrendingUp, Building2, Search, Handshake, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PublicNavbar } from '@/components/public/PublicNavbar';
+import SectionShell from '@/components/public/SectionShell';
+import useCardSpotlight from '@/components/public/useCardSpotlight';
 
-// ─── Shared shell (mirrors SectionShell pattern) ────────────────────────────
-function SectionShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`mx-auto w-full max-w-6xl px-6 py-20 md:px-10 ${className}`}>
-      {children}
-    </section>
-  );
-}
-
-// ─── Navbar (mirrors HeroSection header) ─────────────────────────────────────
-function Navbar() {
-  const navigate = useNavigate();
-  const navLinks = [
-    { label: 'How It Works', href: '/how-it-works' },
-    { label: 'For Students', href: '/for-students' },
-    { label: 'For Companies', href: '/for-companies' },
-    { label: 'Funding', href: '/funding' },
-    { label: 'Contact', href: '/contact' },
-  ];
-  return (
-    <header className="flex items-center justify-between gap-4 px-6 pt-8 md:px-10">
-      <Link to="/" className="inline-flex items-center gap-3">
-        <picture>
-          <source media="(prefers-color-scheme: light)" srcSet="/assets/brand/logo-light-512.png" />
-          <img src="/assets/brand/logo-dark-512.png" alt="Eagle-Foundry" className="h-8 w-8 rounded-full object-cover" />
-        </picture>
-        <span className="text-sm font-semibold tracking-wide text-zinc-100">Eagle-Foundry</span>
-      </Link>
-      <nav className="hidden items-center gap-7 text-xs text-zinc-300 md:flex">
-        {navLinks.map((item) => (
-          <Link key={item.href} to={item.href} className="transition-colors hover:text-white">
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" className="hidden md:inline-flex" onClick={() => navigate('/login')}>Sign In</Button>
-        <Button withBorderEffect={false} className="gap-2" onClick={() => navigate('/sign-up')}>
-          Get Started <ArrowRight size={14} />
-        </Button>
-      </div>
-    </header>
-  );
-}
-
-// ─── Step card ────────────────────────────────────────────────────────────────
 function StepCard({
   number, icon: Icon, title, description, delay,
 }: {
@@ -64,18 +20,17 @@ function StepCard({
       className="ef-card glass-card relative rounded-2xl p-7"
     >
       <div className="mb-5 flex items-start justify-between">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-          <Icon size={20} className="text-zinc-300" />
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--border)] bg-black/[0.04] dark:bg-white/5">
+          <Icon size={20} className="text-[var(--muted)]" />
         </div>
-        <span className="text-4xl font-bold text-white/[0.06] select-none">{number}</span>
+        <span className="text-4xl font-bold text-black/[0.06] dark:text-white/[0.06] select-none">{number}</span>
       </div>
-      <h3 className="mb-2 text-base font-semibold text-zinc-100">{title}</h3>
-      <p className="text-sm leading-relaxed text-zinc-400">{description}</p>
+      <h3 className="mb-2 text-base font-semibold text-[var(--foreground)]">{title}</h3>
+      <p className="text-sm leading-relaxed text-[var(--muted)]">{description}</p>
     </motion.div>
   );
 }
 
-// ─── Track section ────────────────────────────────────────────────────────────
 function Track({
   badge, badgeColor, title, description, steps, delay,
 }: {
@@ -94,7 +49,7 @@ function Track({
           {badge}
         </span>
         <h2 className="ef-heading-gradient mb-3 text-3xl font-semibold tracking-tight">{title}</h2>
-        <p className="max-w-lg text-sm leading-relaxed text-zinc-400">{description}</p>
+        <p className="max-w-lg text-sm leading-relaxed text-[var(--muted)]">{description}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((step, i) => (
@@ -112,22 +67,9 @@ function Track({
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function HowItWorksPage(): JSX.Element {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const cardsRef = useRef<HTMLElement[] | null>(null);
+  const { rootRef, handlePointerMove } = useCardSpotlight();
   const navigate = useNavigate();
-
-  const handlePointerMove = useCallback((event: PointerEvent<HTMLElement>) => {
-    if (!cardsRef.current && rootRef.current) {
-      cardsRef.current = Array.from(rootRef.current.querySelectorAll<HTMLElement>('.ef-card'));
-    }
-    (cardsRef.current ?? []).forEach((card) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--x', `${event.clientX - rect.left}`);
-      card.style.setProperty('--y', `${event.clientY - rect.top}`);
-    });
-  }, []);
 
   const studentSteps = [
     { icon: UserPlus, title: 'Create your profile', description: 'Sign up as a student and build your profile showcasing your skills, university, and interests.' },
@@ -144,37 +86,35 @@ export default function HowItWorksPage(): JSX.Element {
   ];
 
   return (
-    <main ref={rootRef} onPointerMove={handlePointerMove} className="relative overflow-hidden bg-black text-white">
-      {/* Background effects */}
+    <main ref={rootRef} onPointerMove={handlePointerMove} className="relative overflow-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
       <div className="pointer-events-none absolute inset-0 landing-grid opacity-[0.14]" />
-      <div className="pointer-events-none absolute inset-x-0 top-[-30rem] mx-auto h-[52rem] w-[52rem] rounded-full bg-white/10 blur-[220px]" />
+      <div className="pointer-events-none absolute inset-x-0 top-[-30rem] mx-auto h-[52rem] w-[52rem] rounded-full bg-black/5 dark:bg-white/10 blur-[220px]" />
       <div className="pointer-events-none absolute right-[-24rem] top-[20rem] h-[35rem] w-[35rem] rounded-full bg-blue-500/20 blur-[180px]" />
 
       <div className="relative z-10">
-        <Navbar />
+        <PublicNavbar />
 
         {/* Hero */}
-        <SectionShell className="pt-16 pb-8 text-center">
+        <SectionShell className="pb-8 -mt-40 md:pt-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="mx-auto max-w-2xl"
           >
-            <span className="mb-6 inline-block rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-zinc-300">
+            <span className="mb-6 inline-block rounded-full border border-[var(--border)] bg-black/[0.04] dark:bg-white/5 px-4 py-1.5 text-xs text-[var(--muted)]">
               Platform Overview
             </span>
             <h1 className="ef-heading-gradient mb-5 text-5xl font-semibold leading-tight tracking-tight md:text-6xl">
               How Eagle-Foundry works
             </h1>
-            <p className="text-sm leading-relaxed text-zinc-400 md:text-base">
+            <p className="text-sm leading-relaxed text-[var(--muted)] md:text-base">
               Two paths. One platform. Students build ventures and get funded.
-              Companies discover talent and invest early. Here's how it all connects.
+              Companies discover talent and invest early.
             </p>
           </motion.div>
         </SectionShell>
 
-        {/* Divider */}
         <div className="mx-auto max-w-6xl px-6 md:px-10">
           <hr className="muted-divider" />
         </div>
@@ -183,7 +123,7 @@ export default function HowItWorksPage(): JSX.Element {
         <SectionShell>
           <Track
             badge="For Students"
-            badgeColor="border-blue-500/30 bg-blue-500/10 text-blue-300"
+            badgeColor="border-[#4D3B92] dark:border-[var(--accent-violet)] bg-[#8A79CF]/30 dark:bg-[var(--accent-violet)]/30 text-[#4D3B92] dark:text-[var(--accent-violet)]"
             title="From idea to funded venture"
             description="Eagle-Foundry gives students the infrastructure to launch, recruit, and raise — all within a trusted academic network."
             steps={studentSteps}
@@ -199,7 +139,7 @@ export default function HowItWorksPage(): JSX.Element {
         <SectionShell>
           <Track
             badge="For Companies"
-            badgeColor="border-zinc-500/30 bg-zinc-500/10 text-zinc-300"
+            badgeColor="border-[#C38E06]/40 dark:border-[#FBBF24]/30 bg-[#C9A447]/10 dark:bg-[#FBBF24]/10 text-[#C38E06] dark:text-[#FBBF24]"
             title="Discover, hire, and invest early"
             description="Access a curated pipeline of ambitious student founders and emerging startups before they raise anywhere else."
             steps={companySteps}
@@ -217,7 +157,7 @@ export default function HowItWorksPage(): JSX.Element {
             className="glass-card mx-auto max-w-xl rounded-3xl p-10"
           >
             <h2 className="ef-heading-gradient mb-4 text-3xl font-semibold">Ready to get started?</h2>
-            <p className="mb-8 text-sm text-zinc-400">Join the network where ambition meets opportunity.</p>
+            <p className="mb-8 text-sm text-[var(--muted)]">Join the network where ambition meets opportunity.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button withBorderEffect={false} className="gap-2 px-6" onClick={() => navigate('/sign-up')}>
                 Create your account <ArrowRight size={14} />
