@@ -64,18 +64,18 @@ export function CommandPalette(): JSX.Element | null {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[20vh]" onClick={() => { setOpen(false); setQuery(''); }}>
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-      <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-950/95 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
-          <Search size={18} className="text-zinc-500" />
+      <div className="absolute inset-0 bg-[var(--overlay)]/70 backdrop-blur-sm" />
+      <div className="relative z-10 w-full max-w-lg rounded-2xl border border-[var(--border)] bg-[var(--elements)] shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">
+          <Search size={18} className="text-[var(--muted)]" />
           <input
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search startups, opportunities, organizations..."
-            className="flex-1 bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none"
           />
-          <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] text-zinc-500">ESC</kbd>
+          <kbd className="rounded border border-[var(--border)] bg-[var(--elements)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">ESC</kbd>
         </div>
 
         {(results?.length ?? 0) > 0 && (
@@ -86,14 +86,14 @@ export function CommandPalette(): JSX.Element | null {
                 <li key={`${r.type}-${r.id}`}>
                   <button
                     onClick={() => handleSelect(r)}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--foreground)]"
                   >
-                    <Icon size={16} className="shrink-0 text-zinc-500" />
+                    <Icon size={16} className="shrink-0 text-[var(--muted)]" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{r.title}</p>
-                      {r.subtitle && <p className="truncate text-xs text-zinc-500">{r.subtitle}</p>}
+                      {r.subtitle && <p className="truncate text-xs text-[var(--muted)]">{r.subtitle}</p>}
                     </div>
-                    <span className="shrink-0 text-[10px] uppercase tracking-wider text-zinc-600">{r.type}</span>
+                    <span className="shrink-0 text-[10px] uppercase tracking-wider text-[var(--muted)]">{r.type}</span>
                   </button>
                 </li>
               );
@@ -102,7 +102,7 @@ export function CommandPalette(): JSX.Element | null {
         )}
 
         {query.length >= 2 && results?.length === 0 && (
-          <p className="px-4 py-6 text-center text-sm text-zinc-500">No results found</p>
+          <p className="px-4 py-6 text-center text-sm text-[var(--muted)]">No results found</p>
         )}
       </div>
     </div>
