@@ -33,7 +33,7 @@ export default function MessagesPage(): JSX.Element {
       key: 'thread',
       header: 'Thread',
       render: (row) => (
-        <span className="font-medium text-zinc-200">{getThreadContext(row)}</span>
+        <span className="font-medium text-[var(--foreground)]">{getThreadContext(row)}</span>
       ),
     },
     {
@@ -45,7 +45,7 @@ export default function MessagesPage(): JSX.Element {
           ? 'New encrypted message'
           : (last?.content ?? '—');
         const truncated = preview.length > 60 ? `${preview.slice(0, 60)}…` : preview;
-        return <span className="text-zinc-400">{truncated}</span>;
+        return <span className="text-[var(--muted)]">{truncated}</span>;
       },
     },
     {
@@ -54,7 +54,7 @@ export default function MessagesPage(): JSX.Element {
       render: (row) => {
         const d = row.updatedAt ? new Date(row.updatedAt) : null;
         return (
-          <span className="text-zinc-500">
+          <span className="text-[var(--muted)]">
             {d && !isNaN(d.getTime()) ? formatDistanceToNow(d, { addSuffix: true }) : '—'}
           </span>
         );
@@ -64,7 +64,7 @@ export default function MessagesPage(): JSX.Element {
       key: 'actions',
       header: 'Actions',
       render: (row) => (
-        <span className="text-xs text-zinc-500">View</span>
+        <span className="text-xs text-[var(--muted)]">View</span>
       ),
     },
   ];
@@ -74,9 +74,11 @@ export default function MessagesPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
-          Messages
-        </h1>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+            Messages
+          </h1>
+        </div>
       </header>
 
       {isLoading ? (
