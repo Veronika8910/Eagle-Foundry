@@ -42,17 +42,19 @@ export default function StartupJoinRequestsPage(): JSX.Element {
       const body = res.data;
       if (body && typeof body === 'object' && 'data' in body && Array.isArray(body.data)) return body.data;
       if (Array.isArray(body)) return body;
-      return [];
-    },
-    enabled: !!id,
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({
-      requestId,
-      status,
-    }: { requestId: string; status: UpdateJoinRequestPayload['status'] }) => {
-      await api.patch(endpoints.joinRequests.update(requestId), { status });
+      return (
+        <div className="space-y-8">
+          <header>
+            <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Student</p>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+                Startup Join Requests
+              </h1>
+            </div>
+            <p className="mt-3 max-w-3xl text-sm text-[var(--muted)] md:text-base">
+              Review and manage join requests for your startup.
+            </p>
+          </header>
     },
     onSuccess: (_, { status }) => {
       queryClient.invalidateQueries({ queryKey: ['startups', id, 'join-requests'] });
@@ -83,7 +85,7 @@ export default function StartupJoinRequestsPage(): JSX.Element {
         return profileId ? (
           <button
             type="button"
-            className="text-zinc-300 underline underline-offset-2 hover:text-white"
+            className="text-left text-[var(--muted)] underline underline-offset-2 hover:text-[var(--foreground)]"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/students/${profileId}`);
@@ -92,7 +94,7 @@ export default function StartupJoinRequestsPage(): JSX.Element {
             {name}
           </button>
         ) : (
-          <span className="text-zinc-300">{name}</span>
+          <span className="text-[var(--muted)]">{name}</span>
         );
       },
     },
@@ -100,7 +102,7 @@ export default function StartupJoinRequestsPage(): JSX.Element {
       key: 'message',
       header: 'Message',
       render: (row) => (
-        <span className="max-w-[150px] truncate text-zinc-400" title={row.message ?? undefined}>
+        <span className="max-w-[150px] truncate text-[var(--muted)]" title={row.message ?? undefined}>
           {truncate(row.message, 40)}
         </span>
       ),
@@ -116,7 +118,7 @@ export default function StartupJoinRequestsPage(): JSX.Element {
       render: (row) => (
         <Button
           variant="ghost"
-          className="h-8 px-2 text-zinc-400 hover:text-white"
+          className="h-8 px-2 text-[var(--muted)] hover:text-[var(--foreground)]"
           onClick={(e) => {
             e.stopPropagation();
             setViewRequest(row as JoinRequest);
@@ -171,7 +173,7 @@ export default function StartupJoinRequestsPage(): JSX.Element {
             </Button>
           </div>
         ) : (
-          <span className="text-zinc-500">—</span>
+          <span className="text-[var(--border)]">—</span>
         ),
     },
   ];
@@ -244,11 +246,11 @@ export default function StartupJoinRequestsPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Startup</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Startup</p>
         <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
           Join Requests
         </h1>
-        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+        <p className="mt-3 max-w-3xl text-sm text-[var(--muted)] md:text-base">
           Review and respond to students who want to join your startup.
         </p>
       </header>
@@ -312,15 +314,15 @@ export default function StartupJoinRequestsPage(): JSX.Element {
               renderFormAnswers(viewRequest.formAnswers as Record<string, string>)
             ) : (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-zinc-200">Message / Cover Letter</h4>
-                <p className="whitespace-pre-wrap text-sm text-zinc-300 bg-white/5 p-4 rounded-lg border border-white/10">
+                <h4 className="text-sm font-semibold text-[var(--foreground)]">Message / Cover Letter</h4>
+                <p className="whitespace-pre-wrap text-sm text-[var(--muted)] bg-[var(--elements)] p-4 rounded-lg border border-[var(--border)]">
                   {viewRequest.message || 'No message provided.'}
                 </p>
               </div>
             )}
 
             {viewRequest.status === 'PENDING' && (
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-6">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)] mt-6">
                 <Button
                   variant="ghost"
                   className="text-red-400 hover:bg-red-500/10 hover:text-red-300"

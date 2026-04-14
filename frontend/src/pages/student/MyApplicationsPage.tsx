@@ -176,7 +176,7 @@ export default function MyApplicationsPage(): JSX.Element {
         row.listingId ? (
           <button
             type="button"
-            className="text-left text-zinc-300 underline underline-offset-2 hover:text-white"
+            className="text-left text-[var(--muted)] underline underline-offset-2 hover:text-[var(--foreground)]"
             onClick={(e) => {
               e.stopPropagation();
               navigate(row.type === 'PROJECT' ? `/projects/${row.listingId}` : `/opportunities/${row.listingId}`);
@@ -185,7 +185,7 @@ export default function MyApplicationsPage(): JSX.Element {
             {row.title}
           </button>
         ) : (
-          <span className="text-zinc-300">{row.title}</span>
+          <span className="text-[var(--muted)]">{row.title}</span>
         ),
     },
     {
@@ -196,7 +196,7 @@ export default function MyApplicationsPage(): JSX.Element {
         return org ? (
           <button
             type="button"
-            className="text-zinc-400 underline underline-offset-2 hover:text-white"
+            className="text-[var(--muted)] underline underline-offset-2 hover:text-[var(--foreground)]"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/organizations/${org.id}`);
@@ -205,7 +205,7 @@ export default function MyApplicationsPage(): JSX.Element {
             {org.name}
           </button>
         ) : (
-          <span className="text-zinc-500">—</span>
+          <span className="text-[var(--border)]">—</span>
         );
       },
     },
@@ -217,17 +217,17 @@ export default function MyApplicationsPage(): JSX.Element {
     {
       key: 'count',
       header: rowCountHeader(typeFilter),
-      render: (row) => <span className="text-zinc-400">{row.totalCount ?? '—'}</span>,
+      render: (row) => <span className="text-[var(--muted)]">{row.totalCount ?? '—'}</span>,
     },
     {
       key: 'applied',
       header: 'Applied',
-      render: (row) => <span className="text-zinc-400">{format(new Date(row.createdAt), 'MMM d, yyyy')}</span>,
+      render: (row) => <span className="text-[var(--muted)]">{format(new Date(row.createdAt), 'MMM d, yyyy')}</span>,
     },
     {
       key: 'listingStatus',
       header: 'Listing Status',
-      render: (row) => (row.listingStatus ? <Badge>{row.listingStatus}</Badge> : <span className="text-zinc-500">—</span>),
+      render: (row) => (row.listingStatus ? <Badge>{row.listingStatus}</Badge> : <span className="text-[var(--border)]">—</span>),
     },
     {
       key: 'actions',
@@ -245,7 +245,7 @@ export default function MyApplicationsPage(): JSX.Element {
             Withdraw
           </Button>
         ) : (
-          <span className="text-zinc-500">—</span>
+          <span className="text-[var(--border)]">—</span>
         ),
     },
   ];
@@ -256,9 +256,11 @@ export default function MyApplicationsPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Student</p>
-        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">My Applications</h1>
-        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Student</p>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">My Applications</h1>
+        </div>
+        <p className="mt-3 max-w-3xl text-sm text-[var(--muted)] md:text-base">
           Track your opportunity applications and project submissions in one place.
         </p>
       </header>

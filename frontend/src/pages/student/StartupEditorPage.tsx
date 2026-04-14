@@ -166,7 +166,7 @@ export default function StartupEditorPage(): JSX.Element {
         <header>
           <h1 className="ef-heading-gradient text-4xl font-semibold">Startup Editor</h1>
         </header>
-        <div className="h-64 animate-pulse rounded-2xl bg-white/5" />
+        <div className="h-64 animate-pulse rounded-2xl bg-[var(--elements)]" />
       </div>
     );
   }
@@ -176,11 +176,13 @@ export default function StartupEditorPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Student</p>
-        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
-          {isEdit ? 'Edit Startup' : 'Create Startup'}
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Student</p>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+            {isEdit ? 'Edit Startup' : 'Create Startup'}
+          </h1>
+        </div>
+        <p className="mt-3 max-w-3xl text-sm text-[var(--muted)] md:text-base">
           {isEdit
             ? 'Update your startup details before submission.'
             : 'Create a new startup and add your team.'}
@@ -243,8 +245,8 @@ export default function StartupEditorPage(): JSX.Element {
 
           {/* Join Request Settings */}
           {isEdit && (
-            <div className="border-t border-white/10 pt-6 space-y-4">
-              <h3 className="text-lg font-semibold text-zinc-200">Join Request Settings</h3>
+            <div className="border-t border-[var(--border)] pt-6 space-y-4">
+              <h3 className="text-lg font-semibold text-[var(--foreground)]">Join Request Settings</h3>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -252,14 +254,14 @@ export default function StartupEditorPage(): JSX.Element {
                   onChange={(e) => setAcceptingJoinRequests(e.target.checked)}
                   className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-indigo-500 focus:ring-indigo-500"
                 />
-                <span className="text-sm text-zinc-300">
+                <span className="text-sm text-[var(--muted)]">
                   Accept join requests from other students
                 </span>
               </label>
 
               {acceptingJoinRequests && (
                 <div className="space-y-3 pl-7">
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-[var(--border)]">
                     Applicants will be asked for their name, address, resume, and cover letter by default.
                     Add custom questions below if you need additional information.
                   </p>
@@ -267,10 +269,10 @@ export default function StartupEditorPage(): JSX.Element {
                   {customQuestions.map((q) => (
                     <div
                       key={q.id}
-                      className="flex items-start gap-2 rounded-lg border border-white/10 bg-white/5 p-3"
+                      className="flex items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--elements)] p-3"
                     >
                       <div className="flex-1">
-                        <p className="text-sm text-zinc-300">{q.question}</p>
+                        <p className="text-sm text-[var(--muted)]">{q.question}</p>
                         {q.required && (
                           <span className="text-xs text-amber-400">Required</span>
                         )}
@@ -278,7 +280,7 @@ export default function StartupEditorPage(): JSX.Element {
                       <button
                         type="button"
                         onClick={() => removeQuestion(q.id)}
-                        className="text-zinc-500 hover:text-red-400 transition-colors"
+                        className="text-[var(--border)] hover:text-red-400 transition-colors"
                         aria-label="Remove question"
                       >
                         <Trash2 size={16} />
@@ -298,7 +300,7 @@ export default function StartupEditorPage(): JSX.Element {
                         }
                       }}
                     />
-                    <label className="flex items-center gap-1.5 text-xs text-zinc-400 whitespace-nowrap">
+                    <label className="flex items-center gap-1.5 text-xs text-[var(--muted)] whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={newQuestionRequired}
