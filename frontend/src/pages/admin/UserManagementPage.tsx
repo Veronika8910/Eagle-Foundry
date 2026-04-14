@@ -88,11 +88,12 @@ export default function UserManagementPage(): JSX.Element {
     setManageModalOpen(true);
   };
 
+
   const columns: Column<User & Record<string, unknown>>[] = [
     {
       key: 'email',
       header: 'Email',
-      render: (row) => <span className="font-medium text-zinc-200">{row.email}</span>,
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.email}</span>,
     },
     {
       key: 'role',
@@ -144,11 +145,11 @@ export default function UserManagementPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Admin</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Admin</p>
         <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
           User Management
         </h1>
-        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+        <p className="mt-3 max-w-3xl text-sm text-[var(--muted)] md:text-base">
           Search and manage user accounts, roles, status, and MFA state.
         </p>
       </header>
