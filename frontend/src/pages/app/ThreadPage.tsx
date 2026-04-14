@@ -99,13 +99,15 @@ export default function ThreadPage(): JSX.Element {
 
   useEffect(() => {
     if (!cryptoContext || !currentUserId || messages.length === 0) {
-      return;
-    }
-
-    let cancelled = false;
-    (async () => {
-      const entries = await Promise.all(
-        messages.map(async (msg) => {
+      return (
+        <div className="space-y-8">
+          <header>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+                {getThreadContext(thread)}
+              </h1>
+            </div>
+          </header>
           const value = await decryptThreadMessage(msg, cryptoContext, currentUserId);
           return [msg.id, value] as const;
         })
@@ -170,7 +172,7 @@ export default function ThreadPage(): JSX.Element {
   if (threadLoading || !thread) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--foreground)]" />
       </div>
     );
   }
@@ -181,7 +183,7 @@ export default function ThreadPage(): JSX.Element {
         <button
           type="button"
           onClick={() => navigate('/messages')}
-          className="text-sm text-zinc-400 hover:text-zinc-200"
+          className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]"
         >
           ← Back
         </button>
@@ -189,18 +191,18 @@ export default function ThreadPage(): JSX.Element {
           <h1 className="ef-heading-gradient text-2xl font-semibold leading-tight md:text-3xl">
             {getThreadContext(thread)}
           </h1>
-          {encryptionBadge && <p className="text-xs uppercase tracking-[0.12em] text-zinc-500">{encryptionBadge}</p>}
+          {encryptionBadge && <p className="text-xs uppercase tracking-[0.12em] text-[var(--muted)]">{encryptionBadge}</p>}
         </div>
       </header>
 
-      <div className="flex flex-1 flex-col rounded-2xl border border-white/10 bg-black/45">
+      <div className="flex flex-1 flex-col rounded-2xl border border-[var(--border)] bg-[var(--background)]">
         <div className="flex max-h-[400px] min-h-[200px] flex-1 flex-col overflow-y-auto p-4 space-y-4">
           {messagesLoading ? (
             <div className="flex flex-1 items-center justify-center py-8">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--foreground)]" />
             </div>
           ) : messages.length === 0 ? (
-            <p className="py-8 text-center text-sm text-zinc-500">No messages yet. Start the conversation.</p>
+            <p className="py-8 text-center text-sm text-[var(--muted)]">No messages yet. Start the conversation.</p>
           ) : (
             messages.map((msg) => {
               const isOwn = msg.senderId === currentUserId;
@@ -225,12 +227,12 @@ export default function ThreadPage(): JSX.Element {
                       className={cn(
                         'rounded-2xl px-4 py-2',
                         isOwn
-                          ? 'bg-white/15 text-zinc-100'
-                          : 'bg-white/5 text-zinc-200',
+                          ? 'bg-[var(--elements)] text-[var(--foreground)]'
+                          : 'bg-[var(--elements)] text-[var(--foreground)]',
                       )}
                     >
                       <p className="text-sm">{renderedText}</p>
-                      <p className="mt-1 text-xs text-zinc-500">
+                      <p className="mt-1 text-xs text-[var(--muted)]">
                         {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
                       </p>
                     </div>
@@ -242,7 +244,7 @@ export default function ThreadPage(): JSX.Element {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="border-t border-white/10 p-4">
+        <div className="border-t border-[var(--border)] p-4">
           <div className="flex gap-3">
             <Textarea
               value={content}
