@@ -3,19 +3,21 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { TopBar } from '@/components/layout/TopBar';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function AppShell(): JSX.Element {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const reducedMotion = useReducedMotion();
 
+  // Initialise theme — keeps it in sync for the whole app shell
+  useTheme();
+
   const toggleSidebar = useCallback(() => setSidebarOpen((o) => !o), []);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && sidebarOpen) {
-        setSidebarOpen(false);
-      }
+      if (e.key === 'Escape' && sidebarOpen) setSidebarOpen(false);
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
@@ -26,11 +28,13 @@ export default function AppShell(): JSX.Element {
   }, [location.pathname]);
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden bg-black text-white">
+    <div className="relative flex h-screen flex-col overflow-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
       <div className="pointer-events-none absolute inset-0 landing-grid opacity-[0.06]" />
-      <div className="pointer-events-none absolute left-[-18rem] top-[-20rem] h-[36rem] w-[36rem] rounded-full bg-white/10 blur-[180px]" />
+      <div className="pointer-events-none absolute left-[-18rem] top-[-20rem] h-[36rem] w-[36rem] rounded-full bg-[var(--elements)]/10 blur-[180px]" />
 
       <div className="relative z-10 flex h-full flex-col">
+        {/* TopBar receives no theme prop — the toggle button lives inside TopBar.
+            Pass onToggleTheme down if your TopBar accepts it, or add it directly there. */}
         <TopBar onToggleSidebar={toggleSidebar} />
 
         <div className="flex flex-1 overflow-hidden">
@@ -73,7 +77,7 @@ export default function AppShell(): JSX.Element {
             )}
           </AnimatePresence>
 
-          <main className="flex-1 overflow-y-auto p-6 md:p-8">
+          <main className="flex-1 overflow-y-auto p-6 md:p-8 bg-[var(--background)] text-[var(--foreground)]">
             <div className="mx-auto w-full max-w-[1200px]">
               <AnimatePresence mode="wait">
                 <motion.div
