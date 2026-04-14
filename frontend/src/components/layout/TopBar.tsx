@@ -7,6 +7,9 @@ import { api, unwrapApiData } from '@/lib/api/client';
 import { endpoints } from '@/lib/api/endpoints';
 import { toast } from '@/components/ui/toast';
 
+import { Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
+
 interface TopBarProps {
   onToggleSidebar?: () => void;
 }
@@ -17,6 +20,7 @@ export function TopBar({ onToggleSidebar }: TopBarProps): JSX.Element {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
+  const { isDark, toggle } = useTheme();
   const { data: unreadCount } = useQuery({
     queryKey: ['notifications', 'unread-count'],
     queryFn: async () => {
@@ -71,37 +75,45 @@ export function TopBar({ onToggleSidebar }: TopBarProps): JSX.Element {
   const initials = user?.email?.charAt(0).toUpperCase() ?? 'U';
 
   return (
-    <header className="relative z-[70] flex h-14 shrink-0 items-center justify-between border-b border-white/10 bg-black/60 px-4 backdrop-blur-md">
+    <header className="relative z-[70] flex h-14 shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/90 px-4 backdrop-blur-md">
       <div className="flex items-center gap-3">
-        <button onClick={onToggleSidebar} className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white lg:hidden">
+        <button onClick={onToggleSidebar} className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--elements)] hover:text-[var(--foreground)] lg:hidden">
           <Menu size={18} />
         </button>
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/assets/brand/logo-dark-512.png" alt="Eagle-Foundry" className="h-7 w-7 rounded-full" />
-          <span className="hidden text-sm font-semibold tracking-wide text-zinc-100 sm:inline">Eagle-Foundry</span>
+          <img src="/assets/brand/logo-dark-512.png" alt="Eagle-Foundry" className="h-12 w-12 rounded-full" />
+          <span className="hidden text-sm font-semibold tracking-wide text-[var(--foreground)] sm:inline">Eagle-Foundry</span>
         </Link>
       </div>
 
       <button
         onClick={() => navigate('/search')}
-        className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-zinc-400 transition-colors hover:border-white/20 hover:text-zinc-200 md:flex"
+        className="hidden items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--elements)]/60 px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--foreground)] hover:text-[var(--foreground)] md:flex"
       >
         <Search size={14} />
         <span>Search...</span>
-        <kbd className="ml-4 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500">⌘K</kbd>
+        <kbd className="ml-4 rounded border border-[var(--border)] bg-[var(--elements)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)]">⌘K</kbd>
       </button>
 
       <div className="flex items-center gap-2">
         <button
           onClick={() => navigate('/notifications')}
-          className="relative rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+          className="relative rounded-lg p-2 text-[var(--muted)] transition-colors hover:bg-[var(--elements)] hover:text-[var(--foreground)]"
         >
           <Bell size={18} />
           {(unreadCount ?? 0) > 0 && (
-            <span className="absolute right-1 top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold text-black">
+            <span className="absolute right-1 top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--foreground)] px-1 text-[10px] font-bold text-[var(--background)]">
               {unreadCount! > 99 ? '99+' : unreadCount}
             </span>
           )}
+        </button>
+
+        <button
+          onClick={toggle}
+          aria-label="Toggle theme"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--elements)] text-[var(--muted)] transition-colors hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
+        >
+          {isDark ? <Sun size={15} /> : <Moon size={15} />}
         </button>
 
         <div className="relative" ref={profileRef} onKeyDown={handleProfileKeyDown}>
@@ -109,7 +121,7 @@ export function TopBar({ onToggleSidebar }: TopBarProps): JSX.Element {
             onClick={() => setProfileOpen((o) => !o)}
             aria-expanded={profileOpen}
             aria-controls="profile-menu"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--elements)] text-xs font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--foreground)]/10"
           >
             {initials}
           </button>
@@ -117,13 +129,13 @@ export function TopBar({ onToggleSidebar }: TopBarProps): JSX.Element {
             <div
               id="profile-menu"
               role="menu"
-              className="absolute right-0 top-full z-[80] mt-1 w-48 rounded-xl border border-white/10 bg-zinc-950/95 p-1.5 shadow-xl backdrop-blur-lg"
+              className="absolute right-0 top-full z-[80] mt-1 w-48 rounded-xl border border-[var(--border)] bg-[var(--background)]/95 p-1.5 shadow-xl backdrop-blur-lg"
             >
               <Link
                 role="menuitem"
                 to={user?.role === 'STUDENT' ? '/student/profile' : user?.role === 'UNIVERSITY_ADMIN' ? '/admin' : '/company/org'}
                 onClick={() => setProfileOpen(false)}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[var(--muted)] transition-colors hover:bg-[var(--elements)] hover:text-[var(--foreground)]"
               >
                 <User size={14} />
                 Profile
@@ -132,7 +144,7 @@ export function TopBar({ onToggleSidebar }: TopBarProps): JSX.Element {
                 role="menuitem"
                 to="/settings/security"
                 onClick={() => setProfileOpen(false)}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[var(--muted)] transition-colors hover:bg-[var(--elements)] hover:text-[var(--foreground)]"
               >
                 <Shield size={14} />
                 Security
@@ -140,7 +152,7 @@ export function TopBar({ onToggleSidebar }: TopBarProps): JSX.Element {
               <button
                 role="menuitem"
                 onClick={() => { setProfileOpen(false); handleLogout(); }}
-                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/5 hover:text-white"
+                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[var(--muted)] transition-colors hover:bg-[var(--elements)] hover:text-[var(--foreground)]"
               >
                 <LogOut size={14} />
                 Sign out
