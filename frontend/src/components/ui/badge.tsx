@@ -3,11 +3,11 @@ import { cn } from '@/lib/cn';
 type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: 'border-white/15 bg-white/5 text-zinc-300',
-  success: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
-  warning: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
-  error: 'border-red-500/30 bg-red-500/10 text-red-400',
-  info: 'border-blue-500/30 bg-blue-500/10 text-blue-400',
+  default: 'border-[var(--border)] bg-white/5 dark:bg-black/5 text-[var(--muted)]',
+  success: 'border-emerald-400/25 bg-emerald-400/10 text-emerald-400',
+  warning: 'border-amber-400/25 bg-amber-400/10 text-amber-400',
+  error: 'border-red-400/25 bg-red-400/10 text-red-400',
+  info: 'border-blue-400/25 bg-blue-400/10 text-blue-400',
 };
 
 const statusVariantMap: Record<string, BadgeVariant> = {
