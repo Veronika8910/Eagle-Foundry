@@ -177,48 +177,48 @@ a {
 
 .ef-button.with-border-effect {
   border: 1px solid transparent;
-  background: linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
-    conic-gradient(
-        from var(--gradient-angle, 0deg),
-        transparent,
-        rgba(196, 181, 253, 0.94) var(--p),
-        transparent calc(var(--p) * 2)
-      )
-      border-box;
+  background: var(--btn-fill);
   animation: button-border-rotate 3s linear infinite;
 }
 
-.dark .ef-button.with-border-effect {
-  background: linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
-    conic-gradient(
-        from var(--gradient-angle, 0deg),
-        transparent,
-        rgba(255, 255, 255, 0.94) var(--p),
-        transparent calc(var(--p) * 2)
-      )
-      border-box;
+.ef-button.with-border-effect::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  inset: -4px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--gradient-angle, 0deg),
+    transparent,
+    rgba(196, 181, 253, 0.94) var(--p),
+    transparent calc(var(--p) * 2)
+  );
+  filter: blur(6px);
+  opacity: 0.85;
+  transition: background 0.2s;
 }
 
+.dark .ef-button.with-border-effect {
+  background: var(--btn-fill);
+}
+
+.dark .ef-button.with-border-effect::after {
+  background: conic-gradient(
+    from var(--gradient-angle, 0deg),
+    transparent,
+    rgba(255, 255, 255, 0.94) var(--p),
+    transparent calc(var(--p) * 2)
+  );
+}
+
+
 .ef-button.with-border-effect:hover {
-  background: linear-gradient(var(--btn-fill-hover), var(--btn-fill-hover)) padding-box,
-    conic-gradient(
-        from var(--gradient-angle, 0deg),
-        transparent,
-        rgba(196, 181, 253, 0.94) var(--p),
-        transparent calc(var(--p) * 2)
-      )
-      border-box;
+  background: var(--btn-fill-hover);
 }
 
 .dark .ef-button.with-border-effect:hover {
-  background: linear-gradient(var(--btn-fill-hover), var(--btn-fill-hover)) padding-box,
-    conic-gradient(
-        from var(--gradient-angle, 0deg),
-        transparent,
-        rgba(255, 255, 255, 0.94) var(--p),
-        transparent calc(var(--p) * 2)
-      )
-      border-box;
+  background: var(--btn-fill-hover);
 }
 
 .ef-button.no-border-effect:hover {
