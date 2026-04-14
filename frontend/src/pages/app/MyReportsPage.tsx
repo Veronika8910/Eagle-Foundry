@@ -82,7 +82,7 @@ export default function MyReportsPage(): JSX.Element {
       key: 'target',
       header: 'Target',
       render: (row) => (
-        <span className="text-zinc-300">
+        <span className="text-[var(--foreground)]">
           {row.targetType} / {String(row.targetId).slice(0, 8)}…
         </span>
       ),
@@ -93,7 +93,7 @@ export default function MyReportsPage(): JSX.Element {
       render: (row) => {
         const reason = row.reporterReason ?? '';
         const truncated = reason.length > 80 ? `${reason.slice(0, 80)}…` : reason;
-        return <span className="text-zinc-400">{truncated}</span>;
+        return <span className="text-[var(--muted)]">{truncated}</span>;
       },
     },
     {
@@ -106,7 +106,7 @@ export default function MyReportsPage(): JSX.Element {
       header: 'Updated',
       render: (row) => {
         const d = row.updatedAt ? new Date(row.updatedAt) : null;
-        return <span className="text-zinc-500">{d && !isNaN(d.getTime()) ? format(d, 'MMM d, yyyy') : '—'}</span>;
+        return <span className="text-[var(--muted)]">{d && !isNaN(d.getTime()) ? format(d, 'MMM d, yyyy') : '—'}</span>;
       },
     },
   ];
@@ -115,13 +115,15 @@ export default function MyReportsPage(): JSX.Element {
 
   return (
     <div className="space-y-8">
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
-          My Reports
-        </h1>
-        <Button variant="primary" withBorderEffect={false} onClick={() => setModalOpen(true)}>
-          New Report
-        </Button>
+      <header>
+        <div className="mt-2 flex flex-wrap items-center gap-3 justify-between">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+            My Reports
+          </h1>
+          <Button variant="primary" withBorderEffect={false} onClick={() => setModalOpen(true)}>
+            New Report
+          </Button>
+        </div>
       </header>
 
       <Modal
