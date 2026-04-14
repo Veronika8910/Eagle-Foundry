@@ -35,21 +35,21 @@ export function Modal({ open, onClose, title, ariaLabel, children, className }: 
         if (e.target === overlayRef.current) onClose();
       }}
     >
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-[var(--overlay)]/70 backdrop-blur-sm" />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? titleId : undefined}
         aria-label={!title ? (ariaLabel ?? 'Dialog') : undefined}
         className={cn(
-          'relative z-10 w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-950/95 p-6 shadow-2xl backdrop-blur-lg',
+          'relative z-10 w-full max-w-lg rounded-2xl border border-[var(--border)] bg-[var(--elements)] p-6 shadow-2xl backdrop-blur-lg',
           className,
         )}
       >
         {title && (
           <div className="mb-4 flex items-center justify-between">
-            <h2 id={titleId} className="text-lg font-semibold text-white">{title}</h2>
-            <button onClick={onClose} aria-label="Close" className="rounded-lg p-1 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white">
+            <h2 id={titleId} className="text-lg font-semibold text-[var(--foreground)]">{title}</h2>
+            <button onClick={onClose} aria-label="Close" className="rounded-lg p-1 text-[var(--muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--foreground)]">
               <X size={18} />
             </button>
           </div>
